@@ -10,6 +10,7 @@ import javax.swing.JMenuItem;
 
 import com.cburch.logisim.proj.Project;
 import com.cburch.logisim.util.StringGetter;
+import static com.cburch.logisim.util.LocaleString.*;
 
 class SplitterDistributeItem extends JMenuItem implements ActionListener {
 	private Project proj;
@@ -33,14 +34,14 @@ class SplitterDistributeItem extends JMenuItem implements ActionListener {
 			}
 		}
 		setEnabled(!same);
-		setText(toGetter().get());
+		setText(toGetter().toString());
 	}
 	
 	private StringGetter toGetter() {
 		if (order > 0) {
-			return Strings.getter("splitterDistributeAscending");
+			return __("splitterDistributeAscending");
 		} else {
-			return Strings.getter("splitterDistributeDescending");
+			return __("splitterDistributeDescending");
 		}
 	}
 	

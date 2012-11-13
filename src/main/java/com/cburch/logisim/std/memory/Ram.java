@@ -7,6 +7,8 @@ import java.awt.Color;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+import org.apache.commons.lang3.ObjectUtils;
+
 import com.cburch.logisim.circuit.CircuitState;
 import com.cburch.logisim.data.Attribute;
 import com.cburch.logisim.data.AttributeEvent;
@@ -28,17 +30,18 @@ import com.cburch.logisim.instance.InstanceState;
 import com.cburch.logisim.instance.Port;
 import com.cburch.logisim.instance.StdAttr;
 import com.cburch.logisim.proj.Project;
+import static com.cburch.logisim.util.LocaleString.*;
 
 public class Ram extends Mem {
 	static final AttributeOption BUS_COMBINED
-		= new AttributeOption("combined", Strings.getter("ramBusSynchCombined"));
+		= new AttributeOption("combined", __("ramBusSynchCombined"));
 	static final AttributeOption BUS_ASYNCH
-		= new AttributeOption("asynch", Strings.getter("ramBusAsynchCombined"));
+		= new AttributeOption("asynch", __("ramBusAsynchCombined"));
 	static final AttributeOption BUS_SEPARATE
-		= new AttributeOption("separate", Strings.getter("ramBusSeparate"));
+		= new AttributeOption("separate", __("ramBusSeparate"));
 
 	static final Attribute<AttributeOption> ATTR_BUS = Attributes.forOption("bus",
-			Strings.getter("ramBusAttr"),
+			__("ramBusAttr"),
 			new AttributeOption[] { BUS_COMBINED, BUS_ASYNCH, BUS_SEPARATE });
 
 	private static Attribute<?>[] ATTRIBUTES = {
@@ -57,7 +60,7 @@ public class Ram extends Mem {
 	private static Object[][] logOptions = new Object[9][];
 
 	public Ram() {
-		super("RAM", Strings.getter("ramComponent"), 3);
+		super("RAM", __("ramComponent"), 3);
 		setIconName("ram.gif");
 		setInstanceLogger(Logger.class);
 	}
@@ -78,8 +81,8 @@ public class Ram extends Mem {
 	void configurePorts(Instance instance) {
 		Object bus = instance.getAttributeValue(ATTR_BUS);
 		if (bus == null) bus = BUS_COMBINED;
-		boolean asynch = bus == null ? false : bus.equals(BUS_ASYNCH);
-		boolean separate = bus == null ? false : bus.equals(BUS_SEPARATE);
+		boolean asynch = ObjectUtils.equals(bus, BUS_ASYNCH);
+		boolean separate = ObjectUtils.equals(bus, BUS_SEPARATE);
 
 		int portCount = MEM_INPUTS;
 		if (asynch) portCount += 2;
@@ -89,20 +92,20 @@ public class Ram extends Mem {
 
 		configureStandardPorts(instance, ps);
 		ps[OE]  = new Port(-50, 40, Port.INPUT, 1);
-		ps[OE].setToolTip(Strings.getter("ramOETip"));
+		ps[OE].setToolTip(__("ramOETip"));
 		ps[CLR] = new Port(-30, 40, Port.INPUT, 1);
-		ps[CLR].setToolTip(Strings.getter("ramClrTip"));
+		ps[CLR].setToolTip(__("ramClrTip"));
 		if (!asynch) {
 			ps[CLK] = new Port(-70, 40, Port.INPUT, 1);
-			ps[CLK].setToolTip(Strings.getter("ramClkTip"));
+			ps[CLK].setToolTip(__("ramClkTip"));
 		}
 		if (separate) {
 			ps[WE] = new Port(-110, 40, Port.INPUT, 1);
-			ps[WE].setToolTip(Strings.getter("ramWETip"));
+			ps[WE].setToolTip(__("ramWETip"));
 			ps[DIN] = new Port(-140, 20, Port.INPUT, DATA_ATTR);
-			ps[DIN].setToolTip(Strings.getter("ramInTip"));
+			ps[DIN].setToolTip(__("ramInTip"));
 		} else {
-			ps[DATA].setToolTip(Strings.getter("ramBusTip"));
+			ps[DATA].setToolTip(__("ramBusTip"));
 		}
 		instance.setPorts(ps);
 	}
@@ -156,8 +159,8 @@ public class Ram extends Mem {
 		RamState myState = (RamState) getState(state);
 		BitWidth dataBits = state.getAttributeValue(DATA_ATTR);
 		Object busVal = state.getAttributeValue(ATTR_BUS);
-		boolean asynch = busVal == null ? false : busVal.equals(BUS_ASYNCH);
-		boolean separate = busVal == null ? false : busVal.equals(BUS_SEPARATE);
+		boolean asynch = ObjectUtils.equals(busVal, BUS_ASYNCH);
+		boolean separate = ObjectUtils.equals(busVal, BUS_SEPARATE);
 
 		Value addrValue = state.getPort(ADDR);
 		boolean chipSelect = state.getPort(CS) != Value.FALSE;
@@ -208,17 +211,17 @@ public class Ram extends Mem {
 	public void paintInstance(InstancePainter painter) {
 		super.paintInstance(painter);
 		Object busVal = painter.getAttributeValue(ATTR_BUS);
-		boolean asynch = busVal == null ? false : busVal.equals(BUS_ASYNCH);
-		boolean separate = busVal == null ? false : busVal.equals(BUS_SEPARATE);
+		boolean asynch = ObjectUtils.equals(busVal, BUS_ASYNCH);
+		boolean separate = ObjectUtils.equals(busVal, BUS_SEPARATE);
 		
 		if (!asynch) painter.drawClock(CLK, Direction.NORTH);
-		painter.drawPort(OE, Strings.get("ramOELabel"), Direction.SOUTH);
-		painter.drawPort(CLR, Strings.get("ramClrLabel"), Direction.SOUTH);
+		painter.drawPort(OE, _("ramOELabel"), Direction.SOUTH);
+		painter.drawPort(CLR, _("ramClrLabel"), Direction.SOUTH);
 
 		if (separate) {
-			painter.drawPort(WE, Strings.get("ramWELabel"), Direction.SOUTH);
+			painter.drawPort(WE, _("ramWELabel"), Direction.SOUTH);
 			painter.getGraphics().setColor(Color.BLACK);
-			painter.drawPort(DIN, Strings.get("ramDataLabel"), Direction.EAST);
+			painter.drawPort(DIN, _("ramDataLabel"), Direction.EAST);
 		}
 	}
 
@@ -306,7 +309,7 @@ public class Ram extends Mem {
 		@Override
 		public String getLogName(InstanceState state, Object option) {
 			if (option instanceof Integer) {
-				String disp = Strings.get("ramComponent");
+				String disp = _("ramComponent");
 				Location loc = state.getInstance().getLocation();
 				return disp + loc + "[" + option + "]";
 			} else {

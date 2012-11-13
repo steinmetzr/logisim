@@ -17,6 +17,7 @@ import com.cburch.logisim.util.FontUtil;
 import com.cburch.logisim.util.JInputComponent;
 import com.cburch.logisim.util.StringGetter;
 import com.connectina.swing.fontchooser.JFontChooser;
+import static com.cburch.logisim.util.LocaleString.*;
 
 public class Attributes {
 	private Attributes() { }
@@ -24,9 +25,7 @@ public class Attributes {
 	private static class ConstantGetter implements StringGetter {
 		private String str;
 		public ConstantGetter(String str) { this.str = str; }
-		public String get() { return str; }
-		@Override
-		public String toString() { return get(); }
+		public String toString() { return str; }
 	}
 	private static StringGetter getter(String s) { return new ConstantGetter(s); } 
 	
@@ -282,8 +281,8 @@ public class Attributes {
 
 		@Override
 		public String toDisplayString(Boolean value) {
-			if (value.booleanValue()) return Strings.get("booleanTrueOption");
-			else return Strings.get("booleanFalseOption");
+			if (value.booleanValue()) return _("booleanTrueOption");
+			else return _("booleanFalseOption");
 		}
 
 		@Override

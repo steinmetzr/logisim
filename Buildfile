@@ -9,6 +9,8 @@ MRJADAPTER = download artifact('net.roydesign:mrjadapter:jar:1.1') => 'http://ww
 COLORPICKER = download artifact('com.bric:colorpicker:jar:1.0') => 'http://javagraphics.java.net/jars/ColorPicker.jar'
 FONTCHOOSER = artifact('com.connectina.swing:fontchooser:jar:1.0')
 BATIK = transitive artifact('org.apache.xmlgraphics:batik-svggen:jar:1.7')
+COMMONS_LANG = artifact('org.apache.commons:commons-lang3:jar:3.1')
+COMMONS_COLLECTIONS = transitive artifact('net.sourceforge.collections:collections-generic:jar:4.01')
 
 # Create config.xml file and run launch4j
 def launch4j(pkg)
@@ -56,7 +58,7 @@ end
 define 'logisim' do
   project.version = '2.7.2'
   compile.using :lint=>'all'
-  compile.with JAVAHELP, MRJADAPTER, COLORPICKER, FONTCHOOSER, BATIK
+  compile.with JAVAHELP, MRJADAPTER, COLORPICKER, FONTCHOOSER, BATIK, COMMONS_LANG, COMMONS_COLLECTIONS
   compile {
     puts "Including dependencies into generated jar..."
     compile.dependencies.map do |dep|

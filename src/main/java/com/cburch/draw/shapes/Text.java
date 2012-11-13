@@ -6,8 +6,10 @@ package com.cburch.draw.shapes;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.collections15.list.UnmodifiableList;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -20,7 +22,7 @@ import com.cburch.logisim.data.Attribute;
 import com.cburch.logisim.data.AttributeOption;
 import com.cburch.logisim.data.Bounds;
 import com.cburch.logisim.data.Location;
-import com.cburch.logisim.util.UnmodifiableList;
+import static com.cburch.logisim.util.LocaleString.*;
 
 public class Text extends AbstractCanvasObject {
 	private EditableLabel label;
@@ -83,7 +85,7 @@ public class Text extends AbstractCanvasObject {
 	
 	@Override
 	public String getDisplayName() {
-		return Strings.get("shapeText");
+		return _("shapeText");
 	}
 
 	@Override
@@ -147,9 +149,9 @@ public class Text extends AbstractCanvasObject {
 		int y = bds.getY();
 		int w = bds.getWidth();
 		int h = bds.getHeight();
-		return UnmodifiableList.create(new Handle[] {
+		return UnmodifiableList.decorate(Arrays.asList(new Handle[] {
 				new Handle(this, x, y), new Handle(this, x + w, y),
-				new Handle(this, x + w, y + h), new Handle(this, x, y + h) });
+				new Handle(this, x + w, y + h), new Handle(this, x, y + h) }));
 	}
 	
 	@Override

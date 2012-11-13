@@ -37,6 +37,7 @@ import com.cburch.logisim.tools.MenuExtender;
 import com.cburch.logisim.util.GraphicsUtil;
 import com.cburch.logisim.util.StringGetter;
 import com.cburch.logisim.util.StringUtil;
+import static com.cburch.logisim.util.LocaleString.*;
 
 public class SubcircuitFactory extends InstanceFactory {
 	private class CircuitFeature implements StringGetter, MenuExtender, ActionListener {
@@ -47,14 +48,14 @@ public class SubcircuitFactory extends InstanceFactory {
 			this.instance = instance;
 		}
 		
-		public String get() {
+		public String toString() {
 			return source.getName();
 		}
 
 		public void configureMenu(JPopupMenu menu, Project proj) {
 			this.proj = proj;
 			String name = instance.getFactory().getDisplayName();
-			String text = Strings.get("subcircuitViewItem", name);
+			String text = _("subcircuitViewItem", name);
 			JMenuItem item = new JMenuItem(text);
 			item.addActionListener(this);
 			menu.add(item);

@@ -12,6 +12,8 @@ import java.util.StringTokenizer;
 import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 
+import org.apache.commons.collections15.EnumerationUtils;
+
 public class LocaleManager {
 	// static members
 	private static final String SETTINGS_NAME = "settings";
@@ -26,12 +28,9 @@ public class LocaleManager {
 			this.key = key;
 		}
 
-		public String get() {
+		public String toString() {
 			return source.get(key);
 		}
-		
-		@Override
-		public String toString() { return get(); }
 	}
 	
 	private static ArrayList<LocaleListener> listeners = new ArrayList<LocaleListener>();
@@ -40,18 +39,16 @@ public class LocaleManager {
 	private static Locale curLocale = null;
 
 	public static Locale getLocale() {
-		Locale ret = curLocale;
-		if (ret == null) {
-			ret = Locale.getDefault();
-			curLocale = ret;
+		if (curLocale == null) {
+			curLocale = Locale.getDefault();
 		}
-		return ret;
+		return curLocale;
 	}
 
 	public static void setLocale(Locale loc) {
 		Locale cur = getLocale();
 		if (!loc.equals(cur)) {
-			Locale[] opts = Strings.getLocaleManager().getLocaleOptions();
+			Locale[] opts = LocaleString.getUtilLocaleManager().getLocaleOptions();
 			Locale select = null;
 			Locale backup = null;
 			String locLang = loc.getLanguage();
@@ -96,7 +93,7 @@ public class LocaleManager {
 		HashMap<Character,String> ret = null;
 		String val;
 		try {
-			val = Strings.source.locale.getString("accentReplacements");
+			val = LocaleString.getUtilLocaleManager().locale.getString("accentReplacements");
 		} catch (MissingResourceException e) {
 			return null;
 		}
@@ -174,6 +171,10 @@ public class LocaleManager {
 		locale = ResourceBundle.getBundle(bundleName, loc);
 	}
 
+	public Iterable<String> getKeys() {
+		return EnumerationUtils.toList(locale.getKeys());
+	}
+
 	public String get(String key) {
 		String ret;
 		try {
@@ -204,10 +205,6 @@ public class LocaleManager {
 		return StringUtil.formatter(getter(key), arg);
 	}
 	
-	public StringGetter getter(String key, StringGetter arg) {
-		return StringUtil.formatter(getter(key), arg);
-	}
-
 	public Locale[] getLocaleOptions() {
 		String locs = null;
 		try {

@@ -25,7 +25,7 @@ import com.cburch.logisim.proj.Project;
 import com.cburch.logisim.proj.ProjectActions;
 import com.cburch.logisim.util.LocaleManager;
 import com.cburch.logisim.util.MacCompatibility;
-import com.cburch.logisim.util.StringUtil;
+import static com.cburch.logisim.util.LocaleString.*;
 
 public class Startup {
 	private static Startup startupTemp = null;
@@ -193,15 +193,15 @@ public class Startup {
 	}
 
 	private static void setLocale(String lang) {
-		Locale[] opts = Strings.getLocaleOptions();
+		Locale[] opts = getLocaleOptions();
 		for (int i = 0; i < opts.length; i++) {
 			if (lang.equals(opts[i].toString())) {
 				LocaleManager.setLocale(opts[i]);
 				return;
 			}
 		}
-		System.err.println(Strings.get("invalidLocaleError")); //OK
-		System.err.println(Strings.get("invalidLocaleOptionsHeader")); //OK
+		System.err.println(_("invalidLocaleError")); //OK
+		System.err.println(_("invalidLocaleOptionsHeader")); //OK
 		for (int i = 0; i < opts.length; i++) {
 			System.err.println("   " + opts[i].toString()); //OK
 		}
@@ -220,7 +220,11 @@ public class Startup {
 			AppPreferences.setTemplateType(AppPreferences.TEMPLATE_PLAIN);
 		}
 	}
-	
+	/**
+	 * Parses the command-line arguments to com.cburch.logisim.Main
+	 * @param args
+	 * @return A Startup object
+	 */
 	public static Startup parseArgs(String[] args) {
 		// see whether we'll be using any graphics
 		boolean isTty = false;
@@ -266,7 +270,7 @@ public class Startup {
 					i++;
 					String[] fmts = args[i].split(",");
 					if (fmts.length == 0) {
-						System.err.println(Strings.get("ttyFormatError")); //OK
+						System.err.println(_("ttyFormatError")); //OK
 					}
 					for (int j = 0; j < fmts.length; j++) {
 						String fmt = fmts[j].trim();
@@ -281,11 +285,11 @@ public class Startup {
 						} else if (fmt.equals("stats")) {
 							ret.ttyFormat |= TtyInterface.FORMAT_STATISTICS;
 						} else {
-							System.err.println(Strings.get("ttyFormatError")); //OK
+							System.err.println(_("ttyFormatError")); //OK
 						}
 					}
 				} else {
-					System.err.println(Strings.get("ttyFormatError")); //OK
+					System.err.println(_("ttyFormatError")); //OK
 					return null;
 				}
 			} else if (arg.equals("-sub")) {
@@ -293,37 +297,37 @@ public class Startup {
 					File a = new File(args[i + 1]);
 					File b = new File(args[i + 2]);
 					if (ret.substitutions.containsKey(a)) {
-						System.err.println(Strings.get("argDuplicateSubstitutionError")); //OK
+						System.err.println(_("argDuplicateSubstitutionError")); //OK
 						return null;
 					} else {
 						ret.substitutions.put(a, b);
 						i += 2;
 					}
 				} else {
-					System.err.println(Strings.get("argTwoSubstitutionError")); //OK
+					System.err.println(_("argTwoSubstitutionError")); //OK
 					return null;
 				}
 			} else if (arg.equals("-load")) {
 				if (i + 1 < args.length) {
 					i++;
 					if (ret.loadFile != null) {
-						System.err.println(Strings.get("loadMultipleError")); //OK
+						System.err.println(_("loadMultipleError")); //OK
 					}
 					File f = new File(args[i]);
 					ret.loadFile = f;
 				} else {
-					System.err.println(Strings.get("loadNeedsFileError")); //OK
+					System.err.println(_("loadNeedsFileError")); //OK
 					return null;
 				}
 			} else if (arg.equals("-empty")) {
 				if (ret.templFile != null || ret.templEmpty || ret.templPlain) {
-					System.err.println(Strings.get("argOneTemplateError")); //OK
+					System.err.println(_("argOneTemplateError")); //OK
 					return null;
 				}
 				ret.templEmpty = true;
 			} else if (arg.equals("-plain")) {
 				if (ret.templFile != null || ret.templEmpty || ret.templPlain) {
-					System.err.println(Strings.get("argOneTemplateError")); //OK
+					System.err.println(_("argOneTemplateError")); //OK
 					return null;
 				}
 				ret.templPlain = true;
@@ -339,7 +343,7 @@ public class Startup {
 				} else if (a.equals("rectangular")) {
 					AppPreferences.GATE_SHAPE.set(AppPreferences.SHAPE_RECTANGULAR);
 				} else {
-					System.err.println(Strings.get("argGatesOptionError")); //OK
+					System.err.println(_("argGatesOptionError")); //OK
 					System.exit(-1);
 				}
 			} else if (arg.equals("-locale")) {
@@ -355,23 +359,23 @@ public class Startup {
 				} else if (a.equals("no")) {
 					AppPreferences.ACCENTS_REPLACE.setBoolean(true);
 				} else {
-					System.err.println(Strings.get("argAccentsOptionError")); //OK
+					System.err.println(_("argAccentsOptionError")); //OK
 					System.exit(-1);
 				}
 			} else if (arg.equals("-template")) {
 				if (ret.templFile != null || ret.templEmpty || ret.templPlain) {
-					System.err.println(Strings.get("argOneTemplateError")); //OK
+					System.err.println(_("argOneTemplateError")); //OK
 					return null;
 				}
 				i++;
 				if (i >= args.length) printUsage();
 				ret.templFile = new File(args[i]);
 				if (!ret.templFile.exists()) {
-					System.err.println(StringUtil.format( //OK
-							Strings.get("templateMissingError"), args[i]));
+					System.err.println(String.format( //OK
+							_("templateMissingError"), args[i]));
 				} else if (!ret.templFile.canRead()) {
-					System.err.println(StringUtil.format( //OK
-							Strings.get("templateCannotReadError"), args[i]));
+					System.err.println(String.format( //OK
+							_("templateCannotReadError"), args[i]));
 				}
 			} else if (arg.equals("-nosplash")) {
 				ret.showSplash = false;
@@ -385,33 +389,33 @@ public class Startup {
 			}
 		}
 		if (ret.isTty && ret.filesToOpen.isEmpty()) {
-			System.err.println(Strings.get("ttyNeedsFileError")); //OK
+			System.err.println(_("ttyNeedsFileError")); //OK
 			return null;
 		}
 		if (ret.loadFile != null && !ret.isTty) {
-			System.err.println(Strings.get("loadNeedsTtyError")); //OK
+			System.err.println(_("loadNeedsTtyError")); //OK
 			return null;
 		}
 		return ret;
 	}
 
 	private static void printUsage() {
-		System.err.println(StringUtil.format(Strings.get("argUsage"), Startup.class.getName())); //OK
+		System.err.println(String.format(_("argUsage"), Startup.class.getName())); //OK
 		System.err.println(); //OK
-		System.err.println(Strings.get("argOptionHeader")); //OK
-		System.err.println("   " + Strings.get("argAccentsOption")); //OK
-		System.err.println("   " + Strings.get("argClearOption")); //OK
-		System.err.println("   " + Strings.get("argEmptyOption")); //OK
-		System.err.println("   " + Strings.get("argGatesOption")); //OK
-		System.err.println("   " + Strings.get("argHelpOption")); //OK
-		System.err.println("   " + Strings.get("argLoadOption")); //OK
-		System.err.println("   " + Strings.get("argLocaleOption")); //OK
-		System.err.println("   " + Strings.get("argNoSplashOption")); //OK
-		System.err.println("   " + Strings.get("argPlainOption")); //OK
-		System.err.println("   " + Strings.get("argSubOption")); //OK
-		System.err.println("   " + Strings.get("argTemplateOption")); //OK
-		System.err.println("   " + Strings.get("argTtyOption")); //OK
-		System.err.println("   " + Strings.get("argVersionOption")); //OK
+		System.err.println(_("argOptionHeader")); //OK
+		System.err.println("   " + _("argAccentsOption")); //OK
+		System.err.println("   " + _("argClearOption")); //OK
+		System.err.println("   " + _("argEmptyOption")); //OK
+		System.err.println("   " + _("argGatesOption")); //OK
+		System.err.println("   " + _("argHelpOption")); //OK
+		System.err.println("   " + _("argLoadOption")); //OK
+		System.err.println("   " + _("argLocaleOption")); //OK
+		System.err.println("   " + _("argNoSplashOption")); //OK
+		System.err.println("   " + _("argPlainOption")); //OK
+		System.err.println("   " + _("argSubOption")); //OK
+		System.err.println("   " + _("argTemplateOption")); //OK
+		System.err.println("   " + _("argTtyOption")); //OK
+		System.err.println("   " + _("argVersionOption")); //OK
 		System.exit(-1);
 	}
 }

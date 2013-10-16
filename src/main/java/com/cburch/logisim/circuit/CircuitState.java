@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import com.cburch.logisim.circuit.Propagator.SetData;
 import com.cburch.logisim.comp.Component;
@@ -25,8 +26,6 @@ import com.cburch.logisim.instance.InstanceState;
 import com.cburch.logisim.proj.Project;
 import com.cburch.logisim.std.wiring.Clock;
 import com.cburch.logisim.std.wiring.Pin;
-import com.cburch.logisim.util.ArraySet;
-import com.cburch.logisim.util.SmallSet;
 
 public class CircuitState implements InstanceData {
 	private class MyCircuitListener implements CircuitListener {
@@ -123,13 +122,13 @@ public class CircuitState implements InstanceData {
 
 	private CircuitState parentState = null; // parent in tree of CircuitStates
 	private Component parentComp = null; // subcircuit component containing this state
-	private ArraySet<CircuitState> substates = new ArraySet<CircuitState>();
+	private HashSet<CircuitState> substates = new HashSet<CircuitState>();
 
 	private CircuitWires.State wireData = null;
 	private HashMap<Component,Object> componentData = new HashMap<Component,Object>();
 	private Map<Location,Value> values = new HashMap<Location,Value>();
-	private SmallSet<Component> dirtyComponents = new SmallSet<Component>();
-	private SmallSet<Location> dirtyPoints = new SmallSet<Location>();
+	private CopyOnWriteArraySet<Component> dirtyComponents = new CopyOnWriteArraySet<Component>();
+	private CopyOnWriteArraySet<Location> dirtyPoints = new CopyOnWriteArraySet<Location>();
 	HashMap<Location,SetData> causes = new HashMap<Location,SetData>();
 
 	private static int lastId = 0;
@@ -167,7 +166,7 @@ public class CircuitState implements InstanceData {
 		this.parentComp = src.parentComp;
 		this.parentState = src.parentState;
 		HashMap<CircuitState,CircuitState> substateData = new HashMap<CircuitState,CircuitState>();
-		this.substates = new ArraySet<CircuitState>();
+		this.substates = new HashSet<CircuitState>();
 		for (CircuitState oldSub : src.substates) {
 			CircuitState newSub = new CircuitState(src.proj, oldSub.circuit);
 			newSub.copyFrom(oldSub, base);
@@ -283,7 +282,7 @@ public class CircuitState implements InstanceData {
 		try {
 			dirtyComponents.add(comp);
 		} catch (RuntimeException e) {
-			SmallSet<Component> set = new SmallSet<Component>();
+			CopyOnWriteArraySet<Component> set = new CopyOnWriteArraySet<Component>();
 			set.add(comp);
 			dirtyComponents = set;
 		}
@@ -336,7 +335,7 @@ public class CircuitState implements InstanceData {
 					if (firstException == null) firstException = e;
 					if (tries == 0) {
 						toProcess = new Object[0];
-						dirtyComponents = new SmallSet<Component>();
+						dirtyComponents = new CopyOnWriteArraySet<Component>();
 						throw firstException;
 					}
 				}

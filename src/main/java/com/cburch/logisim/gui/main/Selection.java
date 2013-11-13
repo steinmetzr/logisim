@@ -5,6 +5,7 @@ package com.cburch.logisim.gui.main;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -159,7 +160,7 @@ public class Selection extends SelectionBase {
 		return lifted;
 	}
 
-	public Collection<Component> getComponentsContaining(Location query) {
+	public Collection<Component> getComponentsContaining(Point query) {
 		HashSet<Component> ret = new HashSet<Component>();
 		for (Component comp : unionSet) {
 			if (comp.contains(query)) ret.add(comp);
@@ -167,7 +168,7 @@ public class Selection extends SelectionBase {
 		return ret;
 	}
 
-	public Collection<Component> getComponentsContaining(Location query, Graphics g) {
+	public Collection<Component> getComponentsContaining(Point query, Graphics g) {
 		HashSet<Component> ret = new HashSet<Component>();
 		for (Component comp : unionSet) {
 			if (comp.contains(query, g)) ret.add(comp);
@@ -203,12 +204,12 @@ public class Selection extends SelectionBase {
 
 		for (Component c : lifted) {
 			if (!hidden.contains(c)) {
-				Location loc = c.getLocation();
+				Point loc = c.getLocation();
 	
 				Graphics g_new = g.create();
 				context.setGraphics(g_new);
 				c.getFactory().drawGhost(context, Color.GRAY,
-						loc.getX(), loc.getY(), c.getAttributeSet());
+						(int)(loc.getX()), (int)(loc.getY()), c.getAttributeSet());
 				g_new.dispose();
 			}
 		}
@@ -240,9 +241,9 @@ public class Selection extends SelectionBase {
 		Graphics g = context.getGraphics();
 		for (Component comp : unionSet) {
 			AttributeSet attrs = comp.getAttributeSet();
-			Location loc = comp.getLocation();
-			int x = loc.getX() + dx;
-			int y = loc.getY() + dy;
+			Point loc = comp.getLocation();
+			int x = (int) (loc.getX() + dx);
+			int y = (int) (loc.getY() + dy);
 			context.setGraphics(g.create());
 			comp.getFactory().drawGhost(context, Color.gray, x, y, attrs);
 			context.getGraphics().dispose();

@@ -5,6 +5,7 @@ package com.cburch.logisim.instance;
 
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -37,7 +38,7 @@ class InstanceComponent implements Component, AttributeListener, ToolTipMaker {
 	private EventSourceWeakSupport<ComponentListener> listeners;
 	private InstanceFactory factory;
 	private Instance instance;
-	private Location loc;
+	private Point loc;
 	private Bounds bounds;
 	private List<Port> portList;
 	private EndData[] endArray;
@@ -199,7 +200,7 @@ class InstanceComponent implements Component, AttributeListener, ToolTipMaker {
 	//
 	// location/extent methods
 	//
-	public Location getLocation() {
+	public Point getLocation() {
 		return loc;
 	}
 	

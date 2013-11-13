@@ -5,6 +5,7 @@ package com.cburch.logisim.comp;
 
 
 import java.awt.Graphics;
+import java.awt.Point;
 import java.util.List;
 
 import com.cburch.logisim.circuit.CircuitState;
@@ -22,11 +23,11 @@ public interface Component {
 	public AttributeSet getAttributeSet();
 
 	// location/extent methods
-	public Location getLocation();
+	public Point getLocation();
 	public Bounds getBounds();
 	public Bounds getBounds(Graphics g);
-	public boolean contains(Location pt);
-	public boolean contains(Location pt, Graphics g);
+	public boolean contains(Point pt);
+	public boolean contains(Point pt, Graphics g);
 
 	// user interface methods
 	public void expose(ComponentDrawContext context);

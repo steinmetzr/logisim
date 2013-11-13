@@ -3,6 +3,7 @@
 
 package com.cburch.logisim.circuit.appear;
 
+import java.awt.Point;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -14,13 +15,13 @@ import com.cburch.logisim.data.Bounds;
 import com.cburch.logisim.data.Location;
 
 public abstract class AppearanceElement extends AbstractCanvasObject {
-	private Location location;
+	private Point location;
 	
-	public AppearanceElement(Location location) {
-		this.location = location;
+	public AppearanceElement(Point location2) {
+		this.location = location2;
 	}
 	
-	public Location getLocation() {
+	public Point getLocation() {
 		return location;
 	}
 	
@@ -58,25 +59,24 @@ public abstract class AppearanceElement extends AbstractCanvasObject {
 	protected void updateValue(Attribute<?> attr, Object value) {
 		// nothing to do
 	}
-
-	@Override
-	public void translate(int dx, int dy) {
+/*
+	public Point translate(int dx, int dy) {
 		location = location.translate(dx, dy);
 	}
-
+*/
 	protected boolean isInCircle(Location loc, int radius) {
-		int dx = loc.getX() - location.getX();
-		int dy = loc.getY() - location.getY();
+		int dx = (int) (loc.getX() - location.getX());
+		int dy = (int) (loc.getY() - location.getY());
 		return dx * dx + dy * dy < radius * radius;
 	}
 	
 	@Override
-	public Location getRandomPoint(Bounds bds, Random rand) {
+	public Point getRandomPoint(Bounds bds, Random rand) {
 		return null; // this is only used to determine what lies on top of what - but the elements will always be on top anyway
 	}
 
 	protected Bounds getBounds(int radius) {
-		return Bounds.create(location.getX() - radius, location.getY() - radius,
+		return Bounds.create((int)(location.getX()) - radius, (int)(location.getY()) - radius,
 				2 * radius, 2 * radius);
 	}
 }

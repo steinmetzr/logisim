@@ -5,6 +5,7 @@ package com.cburch.logisim.tools;
 
 import java.awt.Cursor;
 import java.awt.Graphics;
+import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.KeyEvent;
 
@@ -23,7 +24,7 @@ import com.cburch.logisim.proj.Project;
 import com.cburch.logisim.std.base.Text;
 import static com.cburch.logisim.util.LocaleString.*;
 
-public class TextTool extends Tool {
+public class TextTool extends Tool{
 	private class MyListener
 			implements CaretListener, CircuitListener {
 		public void editingCanceled(CaretEvent e) {
@@ -123,11 +124,6 @@ public class TextTool extends Tool {
 	public boolean equals(Object other) {
 		return other instanceof TextTool;
 	}
-	
-	@Override
-	public int hashCode() {
-		return TextTool.class.hashCode();
-	}
 
 	@Override
 	public String getName() {
@@ -193,7 +189,7 @@ public class TextTool extends Tool {
 		// Otherwise search for a new caret.
 		int x = e.getX();
 		int y = e.getY();
-		Location loc = Location.create(x, y);
+		Point loc = new Point(x, y);
 		ComponentUserEvent event = new ComponentUserEvent(canvas, x, y);
 
 		// First search in selection.

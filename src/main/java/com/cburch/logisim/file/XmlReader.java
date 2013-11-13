@@ -3,6 +3,7 @@
 
 package com.cburch.logisim.file;
 
+import java.awt.Point;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -33,6 +34,7 @@ import com.cburch.logisim.std.wiring.Pin;
 import com.cburch.logisim.tools.Library;
 import com.cburch.logisim.tools.Tool;
 import com.cburch.logisim.util.InputEventUtil;
+
 import static com.cburch.logisim.util.LocaleString.*;
 
 class XmlReader {
@@ -177,7 +179,7 @@ class XmlReader {
 		
 		private void loadAppearance(Element appearElt, CircuitData circData,
 				String context) {
-			Map<Location, Instance> pins = new HashMap<Location, Instance>();
+			Map<Point, Instance> pins = new HashMap<Point, Instance>();
 			for (Component comp : circData.knownComponents.values()) {
 				if (comp.getFactory() == Pin.FACTORY) {
 					Instance instance = Instance.getInstanceFor(comp);

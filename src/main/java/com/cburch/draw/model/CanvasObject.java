@@ -4,6 +4,7 @@
 package com.cburch.draw.model;
 
 import java.awt.Graphics;
+import java.awt.Point;
 import java.util.List;
 
 import com.cburch.logisim.data.Attribute;
@@ -19,7 +20,7 @@ public interface CanvasObject {
 	public abstract Bounds getBounds();
 	public abstract boolean matches(CanvasObject other);
 	public abstract int matchesHashCode();
-	public abstract boolean contains(Location loc, boolean assumeFilled);
+	public abstract boolean contains(Point loc, boolean assumeFilled);
 	public abstract boolean overlaps(CanvasObject other);
 	public abstract List<Handle> getHandles(HandleGesture gesture);
 	public abstract boolean canRemove();

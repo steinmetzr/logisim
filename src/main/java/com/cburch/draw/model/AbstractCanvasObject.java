@@ -9,12 +9,12 @@ import com.cburch.logisim.data.AttributeEvent;
 import com.cburch.logisim.data.AttributeListener;
 import com.cburch.logisim.data.AttributeSet;
 import com.cburch.logisim.data.Bounds;
-import com.cburch.logisim.data.Location;
 import com.cburch.logisim.util.EventSourceWeakSupport;
 import com.cburch.logisim.util.GraphicsUtil;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Point;
 import java.util.List;
 import java.util.Random;
 
@@ -42,7 +42,7 @@ public abstract class AbstractCanvasObject
 	public abstract int matchesHashCode();
 
 	public abstract Bounds getBounds();
-	public abstract boolean contains(Location loc, boolean assumeFilled);
+	public abstract boolean contains(Point loc, boolean assumeFilled);
 	public abstract void translate(int dx, int dy);
 	public abstract List<Handle> getHandles(HandleGesture gesture);
 	protected abstract void updateValue(Attribute<?> attr, Object value);
@@ -57,11 +57,11 @@ public abstract class AbstractCanvasObject
 		return false;
 	}
 	
-	public Handle canInsertHandle(Location desired) {
+	public Handle canInsertHandle(Point desired) {
 		return null;
 	}
 	
-	public Handle canDeleteHandle(Location loc) {
+	public Handle canDeleteHandle(Point loc) {
 		return null;
 	}
 	
@@ -88,30 +88,30 @@ public abstract class AbstractCanvasObject
 			AbstractCanvasObject that = (AbstractCanvasObject) other;
 			for (int i = 0; i < OVERLAP_TRIES; i++) {
 				if (i % 2 == 0) {
-					Location loc = this.getRandomPoint(c, rand);
+					Point loc = this.getRandomPoint(c, rand);
 					if (loc != null && that.contains(loc, false)) return true;
 				} else {
-					Location loc = that.getRandomPoint(c, rand);
+					Point loc = that.getRandomPoint(c, rand);
 					if (loc != null && this.contains(loc, false)) return true;
 				}
 			}
 			return false;
 		} else {
 			for (int i = 0; i < OVERLAP_TRIES; i++) {
-				Location loc = this.getRandomPoint(c, rand);
+				Point loc = this.getRandomPoint(c, rand);
 				if (loc != null && other.contains(loc, false)) return true;
 			}
 			return false;
 		}
 	}
 
-	protected Location getRandomPoint(Bounds bds, Random rand) {
+	protected Point getRandomPoint(Bounds bds, Random rand) {
 		int x = bds.getX();
 		int y = bds.getY();
 		int w = bds.getWidth();
 		int h = bds.getHeight();
 		for (int i = 0; i < GENERATE_RANDOM_TRIES; i++) {
-			Location loc = Location.create(x + rand.nextInt(w), y + rand.nextInt(h));
+			Point loc = new Point(x + rand.nextInt(w), y + rand.nextInt(h));
 			if (contains(loc, false)) return loc;
 		}
 		return null;

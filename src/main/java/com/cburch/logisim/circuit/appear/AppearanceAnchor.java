@@ -5,6 +5,7 @@ package com.cburch.logisim.circuit.appear;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Point;
 import java.util.Arrays;
 import java.util.List;
 
@@ -20,6 +21,7 @@ import com.cburch.logisim.data.Attributes;
 import com.cburch.logisim.data.Bounds;
 import com.cburch.logisim.data.Direction;
 import com.cburch.logisim.data.Location;
+
 import static com.cburch.logisim.util.LocaleString.*;
 
 public class AppearanceAnchor extends AppearanceElement {
@@ -34,7 +36,7 @@ public class AppearanceAnchor extends AppearanceElement {
 	
 	private Direction facing;
 	
-	public AppearanceAnchor(Location location) {
+	public AppearanceAnchor(Point location) {
 		super(location);
 		facing = Direction.EAST;
 	}
@@ -138,9 +140,33 @@ public class AppearanceAnchor extends AppearanceElement {
 	
 	@Override
 	public List<Handle> getHandles(HandleGesture gesture) {
-		Location c = getLocation();
+		Point c = getLocation();
 		Location end = c.translate(facing, RADIUS + INDICATOR_LENGTH);
 		return UnmodifiableList.decorate(Arrays.asList(new Handle[] { new Handle(this, c),
 				new Handle(this, end) }));
+	}
+
+	@Override
+	public Handle canInsertHandle(Location desired) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Handle canDeleteHandle(Location desired) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean contains(Point loc, boolean assumeFilled) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void translate(int dx, int dy) {
+		// TODO Auto-generated method stub
+		
 	}
 }

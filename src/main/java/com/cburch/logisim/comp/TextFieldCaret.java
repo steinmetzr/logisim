@@ -138,6 +138,11 @@ class TextFieldCaret implements Caret, TextFieldListener {
 		}
 		field.removeTextFieldListener(this);
 	}
+	
+	public void newLine(){
+		curText.concat(System.getProperty("line.serparator"));
+		field.setText(curText);
+	}
 
 	public void mousePressed(MouseEvent e) {
 		//TODO: enhance label editing
@@ -181,7 +186,7 @@ class TextFieldCaret implements Caret, TextFieldListener {
 			pos = 0;
 			break;
 		case KeyEvent.VK_ENTER:
-			stopEditing();
+			newLine();
 			break;
 		case KeyEvent.VK_BACK_SPACE:
 			if (pos > 0) {
@@ -216,7 +221,7 @@ class TextFieldCaret implements Caret, TextFieldListener {
 
 		char c = e.getKeyChar();
 		if (c == '\n') {
-			stopEditing();
+			newLine();
 		} else if (c != KeyEvent.CHAR_UNDEFINED
 				&& !Character.isISOControl(c)) {
 			if (pos < curText.length()) {

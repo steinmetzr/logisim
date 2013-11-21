@@ -5,6 +5,7 @@ package com.cburch.logisim.circuit;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -24,7 +25,6 @@ import com.cburch.logisim.data.AttributeEvent;
 import com.cburch.logisim.data.AttributeListener;
 import com.cburch.logisim.data.BitWidth;
 import com.cburch.logisim.data.Bounds;
-import com.cburch.logisim.data.Location;
 import com.cburch.logisim.data.Value;
 import com.cburch.logisim.instance.Instance;
 import com.cburch.logisim.instance.StdAttr;
@@ -79,7 +79,7 @@ class CircuitWires {
 
 	static class BundleMap {
 		boolean computed = false;
-		HashMap<Location,WireBundle> pointBundles = new HashMap<Location,WireBundle>();
+		HashMap<Point,WireBundle> pointBundles = new HashMap<Point,WireBundle>();
 		HashSet<WireBundle> bundles = new HashSet<WireBundle>();
 		boolean isValid = true;
 		// NOTE: It would make things more efficient if we also had
@@ -97,11 +97,11 @@ class CircuitWires {
 			incompatibilityData.add(e);
 		}
 
-		WireBundle getBundleAt(Location p) {
+		WireBundle getBundleAt(Point p) {
 			return pointBundles.get(p);
 		}
 
-		WireBundle createBundleAt(Location p) {
+		WireBundle createBundleAt(Point p) {
 			WireBundle ret = pointBundles.get(p);
 			if (ret == null) {
 				ret = new WireBundle();
@@ -120,11 +120,11 @@ class CircuitWires {
 			isValid = false;
 		}
 
-		void setBundleAt(Location p, WireBundle b) {
+		void setBundleAt(Point p, WireBundle b) {
 			pointBundles.put(p, b);
 		}
 
-		Set<Location> getBundlePoints() {
+		Set<Point> getBundlePoints() {
 			return pointBundles.keySet();
 		}
 
@@ -173,7 +173,7 @@ class CircuitWires {
 		getBundleMap();
 	}
 
-	BitWidth getWidth(Location q) {
+	BitWidth getWidth(Point q) {
 		BitWidth det = points.getWidth(q);
 		if (det != BitWidth.UNKNOWN) return det;
 
@@ -185,7 +185,7 @@ class CircuitWires {
 		return BitWidth.UNKNOWN;
 	}
 
-	Location getWidthDeterminant(Location q) {
+	Point getWidthDeterminant(Point q) {
 		BitWidth det = points.getWidth(q);
 		if (det != BitWidth.UNKNOWN) return q;
 
@@ -212,7 +212,7 @@ class CircuitWires {
 		return bds;
 	}
 	
-	WireBundle getWireBundle(Location query) {
+	WireBundle getWireBundle(Point query) {
 		BundleMap bmap = getBundleMap();
 		return bmap.getBundleAt(query);
 	}
@@ -221,7 +221,7 @@ class CircuitWires {
 		WireBundle bundle = getWireBundle(start.e0);
 		if (bundle == null) return WireSet.EMPTY;
 		HashSet<Wire> wires = new HashSet<Wire>();
-		for (Location loc : bundle.points) {
+		for (Point loc : bundle.points) {
 			wires.addAll(points.getWires(loc));
 		}
 		return new WireSet(wires);
@@ -316,7 +316,7 @@ class CircuitWires {
 	//
 	// utility methods
 	//
-	void propagate(CircuitState circState, Set<Location> points) {
+	void propagate(CircuitState circState, Set<Point> points) {
 		BundleMap map = getBundleMap();
 		CopyOnWriteArraySet<WireThread> dirtyThreads = new CopyOnWriteArraySet<WireThread>(); // affected threads
 
@@ -337,7 +337,7 @@ class CircuitWires {
 		}
 
 		// determine affected threads, and set values for unwired points
-		for (Location p : points) {
+		for (Point p : points) {
 			WireBundle pb = map.getBundleAt(p);
 			if (pb == null) { // point is not wired
 				circState.setValueByWire(p, circState.getComponentOutputAt(p));
@@ -345,11 +345,11 @@ class CircuitWires {
 				WireThread[] th = pb.threads;
 				if (!pb.isValid() || th == null) {
 					// immediately propagate NILs across invalid bundles
-					CopyOnWriteArraySet<Location> pbPoints = pb.points;
+					CopyOnWriteArraySet<Point> pbPoints = pb.points;
 					if (pbPoints == null) {
 						circState.setValueByWire(p, Value.NIL);
 					} else {
-						for (Location loc2 : pbPoints) {
+						for (Point loc2 : pbPoints) {
 							circState.setValueByWire(loc2, Value.NIL);
 						}
 					}
@@ -392,7 +392,7 @@ class CircuitWires {
 			}
 
 			if (bv != null) {
-				for (Location p : b.points) {
+				for (Point p : b.points) {
 					circState.setValueByWire(p, bv);
 				}
 			}
@@ -411,8 +411,8 @@ class CircuitWires {
 		boolean isValid = bmap.isValid();
 		if (hidden == null || hidden.size() == 0) {
 			for (Wire w : wires) {
-				Location s = w.e0;
-				Location t = w.e1;
+				Point s = w.e0;
+				Point t = w.e1;
 				WireBundle wb = bmap.getBundleAt(s);
 				if (!wb.isValid()) {
 					g.setColor(Value.WIDTH_ERROR_COLOR);
@@ -431,7 +431,7 @@ class CircuitWires {
 				}
 			}
 
-			for (Location loc : points.getSplitLocations()) {
+			for (Point loc : points.getSplitLocations()) {
 				if (points.getComponentCount(loc) > 2) {
 					WireBundle wb = bmap.getBundleAt(loc);
 					if (wb != null) {
@@ -454,8 +454,8 @@ class CircuitWires {
 		} else {
 			for (Wire w : wires) {
 				if (!hidden.contains(w)) {
-					Location s = w.e0;
-					Location t = w.e1;
+					Point s = w.e0;
+					Point t = w.e1;
 					WireBundle wb = bmap.getBundleAt(s);
 					if (!wb.isValid()) {
 						g.setColor(Value.WIDTH_ERROR_COLOR);
@@ -478,7 +478,7 @@ class CircuitWires {
 			// this is just an approximation, but it's good enough since
 			// the problem is minor, and hidden only exists for a short
 			// while at a time anway.
-			for (Location loc : points.getSplitLocations()) {
+			for (Point loc : points.getSplitLocations()) {
 				if (points.getComponentCount(loc) > 2) {
 					int icount = 0;
 					for (Component comp : points.getComponents(loc)) {
@@ -560,7 +560,7 @@ class CircuitWires {
 			WireBundle b = it.next();
 			WireBundle bpar = b.find();
 			if (bpar != b) { // b isn't group's representative
-				for (Location pt : b.points) {
+				for (Point pt : b.points) {
 					ret.setBundleAt(pt, bpar);
 					bpar.points.add(pt);
 				}
@@ -573,7 +573,7 @@ class CircuitWires {
 		for (Splitter spl : splitters) {
 			List<EndData> ends = new ArrayList<EndData>(spl.getEnds());
 			for (EndData end : ends) {
-				Location p = end.getLocation();
+				Point p = end.getLocation();
 				WireBundle pb = ret.createBundleAt(p);
 				pb.setWidth(end.getWidth(), p);
 			}
@@ -581,7 +581,7 @@ class CircuitWires {
 
 		// set the width for each bundle whose size is known
 		// based on components
-		for (Location p : ret.getBundlePoints()) {
+		for (Point p : ret.getBundlePoints()) {
 			WireBundle pb = ret.getBundleAt(p);
 			BitWidth width = points.getWidth(p);
 			if (width != BitWidth.UNKNOWN) {
@@ -595,7 +595,7 @@ class CircuitWires {
 			int index = -1;
 			for (EndData end : ends) {
 				index++;
-				Location p = end.getLocation();
+				Point p = end.getLocation();
 				WireBundle pb = ret.getBundleAt(p);
 				if (pb != null) {
 					pb.setWidth(end.getWidth(), p);
@@ -678,14 +678,14 @@ class CircuitWires {
 	
 	private void connectTunnels(BundleMap ret) {
 		// determine the sets of tunnels
-		HashMap<String,ArrayList<Location>> tunnelSets = new HashMap<String,ArrayList<Location>>();
+		HashMap<String,ArrayList<Point>> tunnelSets = new HashMap<String,ArrayList<Point>>();
 		for (Component comp : tunnels) {
 			String label = comp.getAttributeSet().getValue(StdAttr.LABEL);
 			label = label.trim();
 			if (!label.equals("")) {
-				ArrayList<Location> tunnelSet = tunnelSets.get(label);
+				ArrayList<Point> tunnelSet = tunnelSets.get(label);
 				if (tunnelSet == null) {
-					tunnelSet = new ArrayList<Location>(3);
+					tunnelSet = new ArrayList<Point>(3);
 					tunnelSets.put(label, tunnelSet);
 				}
 				tunnelSet.add(comp.getLocation());
@@ -693,10 +693,10 @@ class CircuitWires {
 		}
 		
 		// now connect the bundles that are tunnelled together
-		for (ArrayList<Location> tunnelSet : tunnelSets.values()) {
+		for (ArrayList<Point> tunnelSet : tunnelSets.values()) {
 			WireBundle foundBundle = null;
-			Location foundLocation = null;
-			for (Location loc : tunnelSet) {
+			Point foundLocation = null;
+			for (Point loc : tunnelSet) {
 				WireBundle b = ret.getBundleAt(loc);
 				if (b != null) {
 					foundBundle = b;
@@ -708,7 +708,7 @@ class CircuitWires {
 				foundLocation = tunnelSet.get(0);
 				foundBundle = ret.createBundleAt(foundLocation); 
 			}
-			for (Location loc : tunnelSet) {
+			for (Point loc : tunnelSet) {
 				if (loc != foundLocation) {
 					WireBundle b = ret.getBundleAt(loc);
 					if (b == null) {
@@ -724,7 +724,7 @@ class CircuitWires {
 	
 	private void connectPullResistors(BundleMap ret) {
 		for (Component comp : pulls) {
-			Location loc = comp.getEnd(0).getLocation();
+			Point loc = comp.getEnd(0).getLocation();
 			WireBundle b = ret.getBundleAt(loc);
 			if (b == null) {
 				b = ret.createBundleAt(loc);
@@ -740,7 +740,7 @@ class CircuitWires {
 		Value ret = Value.UNKNOWN;
 		Value pull = Value.UNKNOWN;
 		for (ThreadBundle tb : t.getBundles()) {
-			for (Location p : tb.b.points) {
+			for (Point p : tb.b.points) {
 				Value val = state.getComponentOutputAt(p);
 				if (val != null && val != Value.NIL) {
 					ret = ret.combine(val.get(tb.loc));

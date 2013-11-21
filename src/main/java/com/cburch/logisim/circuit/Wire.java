@@ -4,6 +4,7 @@
 package com.cburch.logisim.circuit;
 
 import java.awt.Graphics;
+import java.awt.Point;
 import java.util.AbstractList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -21,14 +22,14 @@ import com.cburch.logisim.data.AttributeSet;
 import com.cburch.logisim.data.Attributes;
 import com.cburch.logisim.data.BitWidth;
 import com.cburch.logisim.data.Bounds;
-import com.cburch.logisim.data.Location;
 import com.cburch.logisim.tools.CustomHandles;
 import com.cburch.logisim.util.Cache;
 import com.cburch.logisim.util.GraphicsUtil;
+
 import static com.cburch.logisim.util.LocaleString.*;
 
 public final class Wire implements Component, AttributeSet, CustomHandles,
-		Iterable<Location> {
+		Iterable<Point> {
 	/** Stroke width when drawing wires. */
 	public static final int WIDTH = 3;
 
@@ -46,7 +47,7 @@ public final class Wire implements Component, AttributeSet, CustomHandles,
 		= Arrays.asList(new Attribute<?>[] { dir_attr, len_attr });
 	private static final Cache cache = new Cache();
 
-	public static Wire create(Location e0, Location e1) {
+	public static Wire create(Point e0, Point e1) {
 		return (Wire) cache.get(new Wire(e0, e1));
 	}
 	
@@ -59,11 +60,11 @@ public final class Wire implements Component, AttributeSet, CustomHandles,
 		public int size() { return 2; }
 	}
 
-	final Location e0;
-	final Location e1;
+	final Point e0;
+	final Point e1;
 	final boolean is_x_equal;
 
-	private Wire(Location e0, Location e1) {
+	private Wire(Point e0, Point e1) {
 		this.is_x_equal = e0.getX() == e1.getX();
 		if (is_x_equal) {
 			if (e0.getY() > e1.getY()) {
@@ -96,7 +97,7 @@ public final class Wire implements Component, AttributeSet, CustomHandles,
 		return e0.hashCode() * 31 + e1.hashCode();
 	}
 
-	public int getLength() {
+	public double getLength() {
 		return (e1.getY() - e0.getY()) + (e1.getX() - e0.getX());
 	}
 
@@ -121,13 +122,13 @@ public final class Wire implements Component, AttributeSet, CustomHandles,
 	}
 
 	// location/extent methods
-	public Location getLocation() {
+	public Point getLocation() {
 		return e0;
 	}
 
 	public Bounds getBounds() {
-		int x0 = e0.getX();
-		int y0 = e0.getY();
+		double x0 = e0.getX();
+		double y0 = e0.getY();
 		return Bounds.create(x0 - 2, y0 - 2,
 			e1.getX() - x0 + 5, e1.getY() - y0 + 5);
 	}
@@ -136,7 +137,7 @@ public final class Wire implements Component, AttributeSet, CustomHandles,
 		return getBounds();
 	}
 
-	public boolean contains(Location q) {
+	public boolean contains(Point q) {
 		int qx = q.getX();
 		int qy = q.getY();
 		if (is_x_equal) {
@@ -150,7 +151,7 @@ public final class Wire implements Component, AttributeSet, CustomHandles,
 		}
 	}
 
-	public boolean contains(Location pt, Graphics g) {
+	public boolean contains(Point pt, Graphics g) {
 		return contains(pt);
 	}
 
@@ -162,12 +163,12 @@ public final class Wire implements Component, AttributeSet, CustomHandles,
 	}
 
 	public EndData getEnd(int index) {
-		Location loc = getEndLocation(index);
+		Point loc = getEndLocation(index);
 		return new EndData(loc, BitWidth.UNKNOWN,
 				EndData.INPUT_OUTPUT);
 	}
 
-	public boolean endsAt(Location pt) {
+	public boolean endsAt(Point pt) {
 		return e0.equals(pt) || e1.equals(pt);
 	}
 
@@ -251,13 +252,13 @@ public final class Wire implements Component, AttributeSet, CustomHandles,
 	//
 	public boolean isVertical() { return is_x_equal; }
 
-	public Location getEndLocation(int index) { return index == 0 ? e0 : e1; }
+	public Point getEndLocation(int index) { return index == 0 ? e0 : e1; }
 
-	public Location getEnd0() { return e0; }
+	public Point getEnd0() { return e0; }
 
-	public Location getEnd1() { return e1; }
+	public Point getEnd1() { return e1; }
 
-	public Location getOtherEnd(Location loc) {
+	public Point getOtherEnd(Point loc) {
 		return (loc.equals(e0) ? e1 : e0);
 	}
 	
@@ -270,9 +271,9 @@ public final class Wire implements Component, AttributeSet, CustomHandles,
 		return overlaps(other.e0, other.e1, includeEnds);
 	}
 
-	private boolean overlaps(Location q0, Location q1, boolean includeEnds) {
+	private boolean overlaps(Point q0, Point q1, boolean includeEnds) {
 		if (is_x_equal) {
-			int x0 = q0.getX();
+			int x0 = (int) q0.getX();
 			if (x0 != q1.getX() || x0 != e0.getX()) return false;
 			if (includeEnds) {
 				return e1.getY() >= q0.getY() && e0.getY() <= q1.getY();
@@ -280,7 +281,7 @@ public final class Wire implements Component, AttributeSet, CustomHandles,
 				return e1.getY() > q0.getY() && e0.getY() < q1.getY();
 			}
 		} else {
-			int y0 = q0.getY();
+			int y0 = (int) q0.getY();
 			if (y0 != q1.getY() || y0 != e0.getY()) return false;
 			if (includeEnds) {
 				return e1.getX() >= q0.getX() && e0.getX() <= q1.getX();
@@ -294,7 +295,7 @@ public final class Wire implements Component, AttributeSet, CustomHandles,
 		return this.is_x_equal == other.is_x_equal;
 	}
 	
-	public Iterator<Location> iterator() {
+	public Iterator<Point> iterator() {
 		return new WireIterator(e0, e1);
 	}
 	

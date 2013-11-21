@@ -3,19 +3,19 @@
 
 package com.cburch.logisim.circuit;
 
+import java.awt.Point;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import com.cburch.logisim.data.BitWidth;
-import com.cburch.logisim.data.Location;
 import com.cburch.logisim.data.Value;
 
 class WireBundle {
 	private BitWidth width = BitWidth.UNKNOWN;
 	private Value pullValue = Value.UNKNOWN;
 	private WireBundle parent;
-	private Location widthDeterminant = null;
+	private Point widthDeterminant = null;
 	WireThread[] threads = null;
-	CopyOnWriteArraySet<Location> points = new CopyOnWriteArraySet<Location>(); // points bundle hits
+	CopyOnWriteArraySet<Point> points = new CopyOnWriteArraySet<Point>(); // points bundle hits
 	private WidthIncompatibilityData incompatibilityData = null;
 
 	WireBundle() {
@@ -26,7 +26,7 @@ class WireBundle {
 		return incompatibilityData == null;
 	}
 
-	void setWidth(BitWidth width, Location det) {
+	void setWidth(BitWidth width, Point det) {
 		if (width == BitWidth.UNKNOWN) return;
 		if (incompatibilityData != null) {
 			incompatibilityData.add(det, width);

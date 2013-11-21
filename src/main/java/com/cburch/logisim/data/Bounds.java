@@ -3,6 +3,7 @@
 
 package com.cburch.logisim.data;
 
+import java.awt.Point;
 import java.awt.Rectangle;
 
 import com.cburch.logisim.util.Cache;
@@ -16,14 +17,14 @@ public class Bounds {
 	public static Bounds EMPTY_BOUNDS = new Bounds(0, 0, 0, 0);
 	private static final Cache cache = new Cache();
 
-	public static Bounds create(int x, int y, int wid, int ht) {
-		int hashCode = 13 * (31 * (31 * x + y) + wid) + ht;
+	public static Bounds create(int d, int e, int f, int g) {
+		int hashCode = 13 * (31 * (31 * d + e) + f) + g;
 		Object cached = cache.get(hashCode);
 		if (cached != null) {
 			Bounds bds = (Bounds) cached;
-			if (bds.x == x && bds.y == y && bds.wid == wid && bds.ht == ht) return bds;
+			if (bds.x == d && bds.y == e && bds.wid == f && bds.ht == g) return bds;
 		}
-		Bounds ret = new Bounds(x, y, wid, ht);
+		Bounds ret = new Bounds(d, e, f, g);
 		cache.put(hashCode, ret);
 		return ret;
 	}
@@ -32,8 +33,8 @@ public class Bounds {
 		return create(rect.x, rect.y, rect.width, rect.height);
 	}
 
-	public static Bounds create(Location pt) {
-		return create(pt.getX(), pt.getY(), 1, 1);
+	public static Bounds create(Point pt) {
+		return create((int)pt.getX(), (int)pt.getY(), 1, 1);
 	}
 
 	private final int x;
@@ -100,12 +101,12 @@ public class Bounds {
 	}
 
 
-	public boolean contains(Location p) {
-		return contains(p.getX(), p.getY(), 0);
+	public boolean contains(Point p) {
+		return contains((int)p.getX(), (int)p.getY(), 0);
 	}
 
-	public boolean contains(Location p, int allowedError) {
-		return contains(p.getX(), p.getY(), allowedError);
+	public boolean contains(Point p, int allowedError) {
+		return contains((int)p.getX(), (int)p.getY(), allowedError);
 	}
 
 	public boolean contains(int px, int py) {
@@ -127,8 +128,8 @@ public class Bounds {
 		return contains(bd.x, bd.y, bd.wid, bd.ht);
 	}
 
-	public boolean borderContains(Location p, int fudge) {
-		return borderContains(p.getX(), p.getY(), fudge);
+	public boolean borderContains(Point p, int fudge) {
+		return borderContains((int)p.getX(), (int)p.getY(), fudge);
 	}
 
 	public boolean borderContains(int px, int py, int fudge) {
@@ -145,8 +146,8 @@ public class Bounds {
 		return false;
 	}
 
-	public Bounds add(Location p) {
-		return add(p.getX(), p.getY());
+	public Bounds add(Point p) {
+		return add((int)p.getX(), (int)p.getY());
 	}
 
 	public Bounds add(int x, int y) {

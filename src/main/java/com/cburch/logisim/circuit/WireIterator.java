@@ -3,11 +3,10 @@
 
 package com.cburch.logisim.circuit;
 
+import java.awt.Point;
 import java.util.Iterator;
 
-import com.cburch.logisim.data.Location;
-
-class WireIterator implements Iterator<Location> {
+class WireIterator implements Iterator<Point> {
 	private int curX;
 	private int curY;
 	private int destX;
@@ -16,11 +15,11 @@ class WireIterator implements Iterator<Location> {
 	private int deltaY;
 	private boolean destReturned;
 	
-	public WireIterator(Location e0, Location e1) {
-		curX = e0.getX();
-		curY = e0.getY();
-		destX = e1.getX();
-		destY = e1.getY();
+	public WireIterator(Point e0, Point e1) {
+		curX = (int) e0.getX();
+		curY = (int) e0.getY();
+		destX = (int) e1.getX();
+		destY = (int) e1.getY();
 		destReturned = false;
 		if (curX < destX) deltaX = 10;
 		else if (curX > destX) deltaX = -10;
@@ -43,8 +42,8 @@ class WireIterator implements Iterator<Location> {
 		return !destReturned;
 	}
 	
-	public Location next() {
-		Location ret = Location.create(curX, curY);
+	public Point next() {
+		Point ret = Point.create(curX, curY);
 		destReturned |= curX == destX && curY == destY;
 		curX += deltaX;
 		curY += deltaY;

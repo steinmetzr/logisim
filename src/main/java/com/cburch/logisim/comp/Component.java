@@ -11,7 +11,6 @@ import java.util.List;
 import com.cburch.logisim.circuit.CircuitState;
 import com.cburch.logisim.data.AttributeSet;
 import com.cburch.logisim.data.Bounds;
-import com.cburch.logisim.data.Location;
 
 public interface Component {
 	// listener methods
@@ -58,6 +57,6 @@ public interface Component {
 	// propagation methods
 	public List<EndData> getEnds(); // list of EndDatas
 	public EndData getEnd(int index);
-	public boolean endsAt(Location pt);
+	public boolean endsAt(Point pt);
 	public void propagate(CircuitState state);
 }

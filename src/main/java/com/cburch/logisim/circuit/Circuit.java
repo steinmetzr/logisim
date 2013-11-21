@@ -4,6 +4,7 @@
 package com.cburch.logisim.circuit;
 
 import java.awt.Graphics;
+import java.awt.Point;
 import java.io.PrintStream;
 import java.util.Collection;
 import java.util.Collections;
@@ -26,7 +27,6 @@ import com.cburch.logisim.comp.EndData;
 import com.cburch.logisim.data.AttributeSet;
 import com.cburch.logisim.data.BitWidth;
 import com.cburch.logisim.data.Bounds;
-import com.cburch.logisim.data.Location;
 import com.cburch.logisim.std.wiring.Clock;
 import com.cburch.logisim.util.CollectionUtil;
 import com.cburch.logisim.util.EventSourceWeakSupport;
@@ -36,11 +36,11 @@ public class Circuit {
 	
 	private class EndChangedTransaction extends CircuitTransaction {
 		private Component comp;
-		private Map<Location,EndData> toRemove;
-		private Map<Location,EndData> toAdd;
+		private Map<Point,EndData> toRemove;
+		private Map<Point,EndData> toAdd;
 		
-		EndChangedTransaction(Component comp, Map<Location,EndData> toRemove,
-				Map<Location,EndData> toAdd) {
+		EndChangedTransaction(Component comp, Map<Point, EndData> toRemove,
+				Map<Point, EndData> toAdd) {
 			this.comp = comp;
 			this.toRemove = toRemove;
 			this.toAdd = toAdd;
@@ -53,7 +53,7 @@ public class Circuit {
 
 		@Override
 		protected void run(CircuitMutator mutator) {
-			for (Location loc : toRemove.keySet()) {
+			for (Point loc : toRemove.keySet()) {
 				EndData removed = toRemove.get(loc);
 				EndData replaced = toAdd.remove(loc);
 				if (replaced == null) {
@@ -73,15 +73,15 @@ public class Circuit {
 		public void endChanged(ComponentEvent e) {
 			locker.checkForWritePermission("ends changed");
 			Component comp = e.getSource();
-			HashMap<Location,EndData> toRemove = toMap(e.getOldData());
-			HashMap<Location,EndData> toAdd = toMap(e.getData());
+			HashMap<Point,EndData> toRemove = toMap(e.getOldData());
+			HashMap<Point,EndData> toAdd = toMap(e.getData());
 			EndChangedTransaction xn = new EndChangedTransaction(comp, toRemove, toAdd);
 			locker.execute(xn);
 			fireEvent(CircuitEvent.ACTION_INVALIDATE, comp);
 		}
 
-		private HashMap<Location,EndData> toMap(Object val) {
-			HashMap<Location,EndData> map = new HashMap<Location,EndData>();
+		private HashMap<Point,EndData> toMap(Object val) {
+			HashMap<Point,EndData> map = new HashMap<Point,EndData>();
 			if (val instanceof List) {
 				@SuppressWarnings("unchecked")
 				List<EndData> valList = (List<EndData>) val;
@@ -198,11 +198,11 @@ public class Circuit {
 		return wires.getWidthIncompatibilityData();
 	}
 
-	public BitWidth getWidth(Location p) {
+	public BitWidth getWidth(Point p) {
 		return wires.getWidth(p);
 	}
 
-	public Location getWidthDeterminant(Location p) {
+	public Point getWidthDeterminant(Point p) {
 		return wires.getWidthDeterminant(p);
 	}
 	
@@ -210,7 +210,7 @@ public class Circuit {
 		return wires.points.hasConflict(comp);
 	}
 	
-	public Component getExclusive(Location loc) {
+	public Component getExclusive(Point loc) {
 		return wires.points.getExclusive(loc);
 	}
 
@@ -230,34 +230,34 @@ public class Circuit {
 		return comps;
 	}
 
-	public Collection<? extends Component> getComponents(Location loc) {
+	public Collection<? extends Component> getComponents(Point loc) {
 		return wires.points.getComponents(loc);
 	}
 	
-	public Collection<? extends Component> getSplitCauses(Location loc) {
+	public Collection<? extends Component> getSplitCauses(Point loc) {
 		return wires.points.getSplitCauses(loc);
 	}
 	
-	public Collection<Wire> getWires(Location loc) {
+	public Collection<Wire> getWires(Point loc) {
 		return wires.points.getWires(loc);
 	}
 	
-	public Collection<? extends Component> getNonWires(Location loc) {
+	public Collection<? extends Component> getNonWires(Point loc) {
 		return wires.points.getNonWires(loc);
 	}
 	
-	public boolean isConnected(Location loc, Component ignore) {
+	public boolean isConnected(Point loc, Component ignore) {
 		for (Component o : wires.points.getComponents(loc)) {
 			if (o != ignore) return true;
 		}
 		return false;
 	}
 	
-	public Set<Location> getSplitLocations() {
+	public Set<Point> getSplitLocations() {
 		return wires.points.getSplitLocations();
 	}
 
-	public Collection<Component> getAllContaining(Location pt) {
+	public Collection<Component> getAllContaining(Point pt) {
 		HashSet<Component> ret = new HashSet<Component>();
 		for (Component comp : getComponents()) {
 			if (comp.contains(pt)) ret.add(comp);
@@ -265,7 +265,7 @@ public class Circuit {
 		return ret;
 	}
 
-	public Collection<Component> getAllContaining(Location pt, Graphics g) {
+	public Collection<Component> getAllContaining(Point pt, Graphics g) {
 		HashSet<Component> ret = new HashSet<Component>();
 		for (Component comp : getComponents()) {
 			if (comp.contains(pt, g)) ret.add(comp);

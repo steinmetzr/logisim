@@ -43,7 +43,7 @@ class WireIterator implements Iterator<Point> {
 	}
 	
 	public Point next() {
-		Point ret = Point.create(curX, curY);
+		Point ret = new Point(curX, curY);
 		destReturned |= curX == destX && curY == destY;
 		curX += deltaX;
 		curY += deltaY;

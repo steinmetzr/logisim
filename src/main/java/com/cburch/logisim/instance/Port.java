@@ -3,11 +3,12 @@
 
 package com.cburch.logisim.instance;
 
+import java.awt.Point;
+
 import com.cburch.logisim.comp.EndData;
 import com.cburch.logisim.data.Attribute;
 import com.cburch.logisim.data.AttributeSet;
 import com.cburch.logisim.data.BitWidth;
-import com.cburch.logisim.data.Location;
 import com.cburch.logisim.util.StringGetter;
 
 public class Port {
@@ -76,16 +77,16 @@ public class Port {
 		return widthAttr;
 	}
 	
-	public EndData toEnd(Location loc, AttributeSet attrs) {
-		Location pt = loc.translate(dx, dy);
+	public EndData toEnd(Point loc, AttributeSet attrs) {
+		loc.translate(dx, dy);
 		if (widthFixed != null) {
-			return new EndData(pt, widthFixed, type, exclude);
+			return new EndData(loc, widthFixed, type, exclude);
 		} else {
 			Object val = attrs.getValue(widthAttr);
 			if (!(val instanceof BitWidth)) {
 				throw new IllegalArgumentException("Width attribute not set");
 			}
-			return new EndData(pt, (BitWidth) val, type, exclude);
+			return new EndData(loc, (BitWidth) val, type, exclude);
 		}
 	}
 	

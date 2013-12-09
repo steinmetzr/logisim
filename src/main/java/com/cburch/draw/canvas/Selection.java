@@ -4,6 +4,7 @@
 package com.cburch.draw.canvas;
 
 import java.awt.Graphics;
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -15,7 +16,6 @@ import com.cburch.draw.model.CanvasModelEvent;
 import com.cburch.draw.model.CanvasObject;
 import com.cburch.draw.model.Handle;
 import com.cburch.draw.model.HandleGesture;
-import com.cburch.logisim.data.Location;
 
 public class Selection {
 	private static final String MOVING_HANDLE = "movingHandle";
@@ -193,8 +193,8 @@ public class Selection {
 		}
 	}
 	
-	public Location getMovingDelta() {
-		return Location.create(moveDx, moveDy);
+	public Point getMovingDelta() {
+		return new Point(moveDx, moveDy);
 	}
 	
 	public void setMovingDelta(int dx, int dy) {

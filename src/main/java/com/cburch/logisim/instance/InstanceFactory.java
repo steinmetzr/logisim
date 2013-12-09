@@ -5,6 +5,7 @@ package com.cburch.logisim.instance;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Point;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -23,7 +24,6 @@ import com.cburch.logisim.data.AttributeSet;
 import com.cburch.logisim.data.AttributeSets;
 import com.cburch.logisim.data.Bounds;
 import com.cburch.logisim.data.Direction;
-import com.cburch.logisim.data.Location;
 import com.cburch.logisim.gui.log.Loggable;
 import com.cburch.logisim.tools.Pokable;
 import com.cburch.logisim.tools.key.KeyConfigurator;
@@ -126,7 +126,7 @@ public abstract class InstanceFactory extends AbstractComponentFactory {
 	}
 	
 	@Override
-	public final Component createComponent(Location loc, AttributeSet attrs) {
+	public final Component createComponent(Point loc, AttributeSet attrs) {
 		InstanceComponent ret = new InstanceComponent(this, loc, attrs);
 		configureNewInstance(ret.getInstance());
 		return ret;
@@ -146,7 +146,7 @@ public abstract class InstanceFactory extends AbstractComponentFactory {
 		return ret;
 	}
 	
-	public boolean contains(Location loc, AttributeSet attrs) {
+	public boolean contains(Point loc, AttributeSet attrs) {
 		Bounds bds = getOffsetBounds(attrs);
 		if (bds == null) return false;
 		return bds.contains(loc, 1);

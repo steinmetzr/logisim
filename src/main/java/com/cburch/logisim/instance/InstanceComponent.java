@@ -28,7 +28,6 @@ import com.cburch.logisim.data.AttributeListener;
 import com.cburch.logisim.data.AttributeSet;
 import com.cburch.logisim.data.BitWidth;
 import com.cburch.logisim.data.Bounds;
-import com.cburch.logisim.data.Location;
 import com.cburch.logisim.tools.TextEditable;
 import com.cburch.logisim.tools.ToolTipMaker;
 import com.cburch.logisim.util.EventSourceWeakSupport;
@@ -49,13 +48,13 @@ class InstanceComponent implements Component, AttributeListener, ToolTipMaker {
 	private boolean attrListenRequested;
 	private InstanceTextField textField;
 	
-	InstanceComponent(InstanceFactory factory, Location loc,
+	InstanceComponent(InstanceFactory factory, Point loc,
 			AttributeSet attrs) {
 		this.listeners = null;
 		this.factory = factory;
 		this.instance = new Instance(this);
 		this.loc = loc;
-		this.bounds = factory.getOffsetBounds(attrs).translate(loc.getX(), loc.getY());
+		this.bounds = factory.getOffsetBounds(attrs).translate((int)loc.getX(), (int)loc.getY());
 		this.portList = factory.getPorts();
 		this.endArray = null;
 		this.hasToolTips = false;

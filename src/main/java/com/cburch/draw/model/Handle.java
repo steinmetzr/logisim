@@ -3,7 +3,7 @@
 
 package com.cburch.draw.model;
 
-import com.cburch.logisim.data.Location;
+import java.awt.Point;
 
 public class Handle {
 	private CanvasObject object;
@@ -16,8 +16,8 @@ public class Handle {
 		this.y = y;
 	}
 	
-	public Handle(CanvasObject object, Location loc) {
-		this(object, loc.getX(), loc.getY());
+	public Handle(CanvasObject object, Point loc) {
+		this(object, (int)loc.getX(), (int)loc.getY());
 	}
 	
 	public CanvasObject getObject() {
@@ -32,12 +32,12 @@ public class Handle {
 		return y;
 	}
 	
-	public Location getLocation() {
-		return Location.create(x, y);
+	public Point getLocation() {
+		return new Point(x, y);
 	}
 	
-	public boolean isAt(Location loc) {
-		return x == loc.getX() && y == loc.getY();
+	public boolean isAt(Point loc) {
+		return x == (int)loc.getX() && y == (int)loc.getY();
 	}
 	
 	public boolean isAt(int xq, int yq) {

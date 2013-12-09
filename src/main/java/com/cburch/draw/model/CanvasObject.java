@@ -10,7 +10,6 @@ import java.util.List;
 import com.cburch.logisim.data.Attribute;
 import com.cburch.logisim.data.AttributeSet;
 import com.cburch.logisim.data.Bounds;
-import com.cburch.logisim.data.Location;
 
 public interface CanvasObject {
 	public abstract CanvasObject clone();
@@ -25,8 +24,8 @@ public interface CanvasObject {
 	public abstract List<Handle> getHandles(HandleGesture gesture);
 	public abstract boolean canRemove();
 	public abstract boolean canMoveHandle(Handle handle);
-	public abstract Handle canInsertHandle(Location desired);
-	public abstract Handle canDeleteHandle(Location desired);
+	public abstract Handle canInsertHandle(Point desired);
+	public abstract Handle canDeleteHandle(Point desired);
 	public abstract void paint(Graphics g, HandleGesture gesture);
 	
 	public Handle moveHandle(HandleGesture gesture);

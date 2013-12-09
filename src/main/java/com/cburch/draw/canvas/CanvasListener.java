@@ -4,6 +4,7 @@
 package com.cburch.draw.canvas;
 
 import java.awt.Cursor;
+import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -14,7 +15,6 @@ import java.util.List;
 import com.cburch.draw.model.CanvasModelEvent;
 import com.cburch.draw.model.CanvasModelListener;
 import com.cburch.draw.model.CanvasObject;
-import com.cburch.logisim.data.Location;
 
 class CanvasListener implements MouseListener, MouseMotionListener, KeyListener,
 		CanvasModelListener {
@@ -106,7 +106,7 @@ class CanvasListener implements MouseListener, MouseMotionListener, KeyListener,
 	}
 	
 	private void handlePopupTrigger(MouseEvent e) {
-		Location loc = Location.create(e.getX(), e.getY());
+		Point loc = new Point(e.getX(), e.getY());
 		List<CanvasObject> objects = canvas.getModel().getObjectsFromTop();
 		CanvasObject clicked = null;
 		for (CanvasObject o : objects) {

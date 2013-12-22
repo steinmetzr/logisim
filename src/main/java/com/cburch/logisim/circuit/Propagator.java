@@ -3,6 +3,7 @@
 
 package com.cburch.logisim.circuit;
 
+import java.awt.Point;
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,7 +15,6 @@ import com.cburch.logisim.comp.ComponentDrawContext;
 import com.cburch.logisim.comp.EndData;
 import com.cburch.logisim.data.AttributeEvent;
 import com.cburch.logisim.data.AttributeListener;
-import com.cburch.logisim.data.Location;
 import com.cburch.logisim.data.Value;
 import com.cburch.logisim.file.Options;
 
@@ -24,12 +24,12 @@ public class Propagator {
 		int serialNumber;
 		CircuitState state; // state of circuit containing component
 		Component cause;    // component emitting the value
-		Location loc;       // the location at which value is emitted
+		Point loc;       // the location at which value is emitted
 		Value val;          // value being emitted
 		SetData next = null;
 
 		private SetData(int time, int serialNumber, CircuitState state,
-				Location loc, Component cause, Value val) {
+				Point loc, Component cause, Value val) {
 			this.time = time;
 			this.serialNumber = serialNumber;
 			this.state = state;
@@ -64,9 +64,9 @@ public class Propagator {
 
 	private static class ComponentPoint {
 		Component cause;
-		Location loc;
+		Point loc;
 
-		public ComponentPoint(Component cause, Location loc) {
+		public ComponentPoint(Component cause, Point loc) {
 			this.cause = cause;
 			this.loc = loc;
 		}
@@ -305,14 +305,14 @@ public class Propagator {
 		clearDirtyComponents();
 	} */
 	
-	void locationTouched(CircuitState state, Location loc) {
+	void locationTouched(CircuitState state, Point loc) {
 		if (oscAdding) oscPoints.add(state, loc);
 	}
 
 	//
 	// package-protected helper methods
 	//
-	void setValue(CircuitState state, Location pt, Value val,
+	void setValue(CircuitState state, Point pt, Value val,
 			Component cause, int delay) {
 		if (cause instanceof Wire || cause instanceof Splitter) return;
 		if (delay <= 0) {
@@ -357,7 +357,7 @@ public class Propagator {
 	//
 	void checkComponentEnds(CircuitState state, Component comp) {
 		for (EndData end : comp.getEnds()) {
-			Location loc    = end.getLocation();
+			Point loc    = end.getLocation();
 			SetData oldHead = state.causes.get(loc);
 			Value   oldVal  = computeValue(oldHead);
 			SetData newHead = removeCause(state, oldHead, loc, comp);
@@ -385,7 +385,7 @@ public class Propagator {
 			return removeCause(state, head, data.loc, data.cause);
 		}
 
-		HashMap<Location,SetData> causes = state.causes;
+		HashMap<Point,SetData> causes = state.causes;
 
 		// first check whether this is change of previous info.
 		boolean replaced = false;
@@ -412,8 +412,8 @@ public class Propagator {
 	}
 
 	private SetData removeCause(CircuitState state, SetData head,
-			Location loc, Component cause) {
-		HashMap<Location,SetData> causes = state.causes;
+			Point loc, Component cause) {
+		HashMap<Point,SetData> causes = state.causes;
 		if (head == null) {
 			;
 		} else if (head.cause == cause) {

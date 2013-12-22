@@ -4,13 +4,13 @@
 package com.cburch.logisim.comp;
 
 import java.awt.Color;
+import java.awt.Point;
 
 import com.cburch.logisim.LogisimVersion;
 import com.cburch.logisim.data.Attribute;
 import com.cburch.logisim.data.AttributeDefaultProvider;
 import com.cburch.logisim.data.AttributeSet;
 import com.cburch.logisim.data.Bounds;
-import com.cburch.logisim.data.Location;
 import com.cburch.logisim.util.StringGetter;
 
 /**
@@ -27,7 +27,7 @@ public interface ComponentFactory extends AttributeDefaultProvider {
 	public String getName();
 	public String getDisplayName();
 	public StringGetter getDisplayGetter();
-	public Component createComponent(Location loc, AttributeSet attrs);
+	public Component createComponent(Point loc, AttributeSet attrs);
 	public Bounds getOffsetBounds(AttributeSet attrs);
 	public AttributeSet createAttributeSet();
 	public boolean isAllDefaultValues(AttributeSet attrs, LogisimVersion ver);

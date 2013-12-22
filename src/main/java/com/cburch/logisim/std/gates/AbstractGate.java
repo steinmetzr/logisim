@@ -6,6 +6,7 @@ package com.cburch.logisim.std.gates;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.util.Map;
 
 import javax.swing.Icon;
@@ -19,7 +20,6 @@ import com.cburch.logisim.data.Attribute;
 import com.cburch.logisim.data.AttributeSet;
 import com.cburch.logisim.data.Bounds;
 import com.cburch.logisim.data.Direction;
-import com.cburch.logisim.data.Location;
 import com.cburch.logisim.data.Value;
 import com.cburch.logisim.file.Options;
 import com.cburch.logisim.instance.Instance;
@@ -104,7 +104,7 @@ abstract class AbstractGate extends InstanceFactory {
 	}
 	
 	@Override
-	public boolean contains(Location loc, AttributeSet attrsBase) {
+	public boolean contains(Point loc, AttributeSet attrsBase) {
 		GateAttributes attrs = (GateAttributes) attrsBase;
 		if (super.contains(loc, attrs)) {
 			if (attrs.negated == 0) {
@@ -112,7 +112,7 @@ abstract class AbstractGate extends InstanceFactory {
 			} else {
 				Direction facing = attrs.facing;
 				Bounds bds = getOffsetBounds(attrsBase);
-				int delt;
+				double delt;
 				if (facing == Direction.NORTH) {
 					delt = loc.getY() - (bds.getY() + bds.getHeight());
 				} else if (facing == Direction.SOUTH) {
@@ -127,7 +127,7 @@ abstract class AbstractGate extends InstanceFactory {
 				} else {
 					int inputs = attrs.inputs;
 					for (int i = 1; i <= inputs; i++) {
-						Location offs = getInputOffset(attrs, i);
+						Point offs = getInputOffset(attrs, i);
 						if (loc.manhattanDistanceTo(offs) <= 5) return true;
 					}
 					return false;
@@ -161,7 +161,7 @@ abstract class AbstractGate extends InstanceFactory {
 		int negated = attrs.negated;
 
 		Object shape = painter.getGateShape();
-		Location loc = painter.getLocation();
+		Point loc = painter.getLocation();
 		Bounds bds = painter.getOffsetBounds();
 		int width = bds.getWidth();
 		int height = bds.getHeight();
@@ -180,8 +180,8 @@ abstract class AbstractGate extends InstanceFactory {
 			for (int i = 0; i < inputs; i++) {
 				int negatedBit = (negated >> i) & 1;
 				if (negatedBit == 1) {
-					Location in = getInputOffset(attrs, i);
-					Location cen = in.translate(facing, 5);
+					Point in = getInputOffset(attrs, i);
+					Point cen = in.translate(facing, 5);
 					painter.drawDongle(loc.getX() + cen.getX(),
 							loc.getY() + cen.getY());
 				}
@@ -387,7 +387,7 @@ abstract class AbstractGate extends InstanceFactory {
 		if (AppPreferences.GATE_SHAPE.get().equals(AppPreferences.SHAPE_RECTANGULAR)) {
 			perp += 6;
 		}
-		Location loc = instance.getLocation();
+		Point loc = instance.getLocation();
 		int cx;
 		int cy;
 		if (facing == Direction.NORTH) {
@@ -414,7 +414,7 @@ abstract class AbstractGate extends InstanceFactory {
 		Port[] ports = new Port[inputs + 1];
 		ports[0] = new Port(0, 0, Port.OUTPUT, StdAttr.WIDTH);
 		for (int i = 0; i < inputs; i++) {
-			Location offs = getInputOffset(attrs, i);
+			Point offs = getInputOffset(attrs, i);
 			ports[i + 1] = new Port(offs.getX(), offs.getY(), Port.INPUT, StdAttr.WIDTH);
 		}
 		instance.setPorts(ports);
@@ -486,7 +486,7 @@ abstract class AbstractGate extends InstanceFactory {
 		}
 		if (key == ExpressionComputer.class) {
 			return new ExpressionComputer() {
-				public void computeExpression(Map<Location,Expression> expressionMap) {
+				public void computeExpression(Map<Point,Expression> expressionMap) {
 					GateAttributes attrs = (GateAttributes) instance.getAttributeSet();
 					int inputCount = attrs.inputs;
 					int negated = attrs.negated;
@@ -514,7 +514,7 @@ abstract class AbstractGate extends InstanceFactory {
 		return super.getInstanceFeature(instance, key);
 	}
 	
-	Location getInputOffset(GateAttributes attrs, int index) {
+	Point getInputOffset(GateAttributes attrs, int index) {
 		int inputs = attrs.inputs;
 		Direction facing = attrs.facing;
 		int size = ((Integer) attrs.size.getValue()).intValue();
@@ -563,13 +563,21 @@ abstract class AbstractGate extends InstanceFactory {
 		}
 		
 		if (facing == Direction.NORTH) {
-			return Location.create(dy, dx);
+			return Point.create(dy, dx);
 		} else if (facing == Direction.SOUTH) {
-			return Location.create(dy, -dx);
+			return Point.create(dy, -dx);
 		} else if (facing == Direction.WEST) {
-			return Location.create(dx, dy);
+			return Point.create(dx, dy);
 		} else {
-			return Location.create(-dx, dy);
+			return Point.create(-dx, dy);
 		}
 	}
+}
+
+public int manhattanDistanceTo(Point o) {
+	return Math.abs(o.x - this.x) + Math.abs(o.y - this.y);
+}
+
+public int manhattanDistanceTo(int x, int y) {
+	return Math.abs(x - this.x) + Math.abs(y - this.y);
 }

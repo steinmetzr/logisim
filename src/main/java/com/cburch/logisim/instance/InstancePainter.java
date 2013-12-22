@@ -133,7 +133,7 @@ public class InstancePainter implements InstanceState {
 		return c == null ? null : c.getInstance();
 	}
 	
-	public Location getLocation() {
+	public Point getLocation() {
 		InstanceComponent c = comp;
 		return c == null ? Location.create(0, 0) : c.getLocation();
 	}

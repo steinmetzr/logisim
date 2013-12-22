@@ -3,6 +3,7 @@
 
 package com.cburch.logisim.circuit;
 
+import java.awt.Point;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
@@ -17,7 +18,6 @@ import com.cburch.logisim.comp.Component;
 import com.cburch.logisim.comp.ComponentDrawContext;
 import com.cburch.logisim.comp.ComponentState;
 import com.cburch.logisim.data.BitWidth;
-import com.cburch.logisim.data.Location;
 import com.cburch.logisim.data.Value;
 import com.cburch.logisim.instance.Instance;
 import com.cburch.logisim.instance.InstanceData;
@@ -126,10 +126,10 @@ public class CircuitState implements InstanceData {
 
 	private CircuitWires.State wireData = null;
 	private HashMap<Component,Object> componentData = new HashMap<Component,Object>();
-	private Map<Location,Value> values = new HashMap<Location,Value>();
+	private Map<Point,Value> values = new HashMap<Point,Value>();
 	private CopyOnWriteArraySet<Component> dirtyComponents = new CopyOnWriteArraySet<Component>();
-	private CopyOnWriteArraySet<Location> dirtyPoints = new CopyOnWriteArraySet<Location>();
-	HashMap<Location,SetData> causes = new HashMap<Location,SetData>();
+	private CopyOnWriteArraySet<Point> dirtyPoints = new CopyOnWriteArraySet<Point>();
+	HashMap<Point,SetData> causes = new HashMap<Point,SetData>();
 
 	private static int lastId = 0;
 	private int id = lastId++;
@@ -190,7 +190,7 @@ public class CircuitState implements InstanceData {
 				this.componentData.put(key, newValue);
 			}
 		}
-		for (Location key : src.causes.keySet()) {
+		for (Point key : src.causes.keySet()) {
 			Propagator.SetData oldValue = src.causes.get(key);
 			Propagator.SetData newValue = oldValue.cloneFor(this);
 			this.causes.put(key, newValue);
@@ -266,7 +266,7 @@ public class CircuitState implements InstanceData {
 		componentData.put(comp, data);
 	}
 
-	public Value getValue(Location pt) {
+	public Value getValue(Point pt) {
 		Value ret = values.get(pt);
 		if (ret != null) return ret;
 
@@ -274,7 +274,7 @@ public class CircuitState implements InstanceData {
 		return Value.createUnknown(wid);
 	}
 
-	public void setValue(Location pt, Value val, Component cause, int delay) {
+	public void setValue(Point pt, Value val, Component cause, int delay) {
 		if (base != null) base.setValue(this, pt, val, cause, delay);
 	}
 
@@ -292,7 +292,7 @@ public class CircuitState implements InstanceData {
 		dirtyComponents.addAll(comps);
 	}
 
-	public void markPointAsDirty(Location pt) {
+	public void markPointAsDirty(Point pt) {
 		dirtyPoints.add(pt);
 	}
 	
@@ -360,7 +360,7 @@ public class CircuitState implements InstanceData {
 	}
 
 	void processDirtyPoints() {
-		HashSet<Location> dirty = new HashSet<Location>(dirtyPoints);
+		HashSet<Point> dirty = new HashSet<Point>(dirtyPoints);
 		dirtyPoints.clear();
 		if (circuit.wires.isMapVoided()) {
 			for (int i = 3; i >= 0; i--) {
@@ -422,17 +422,17 @@ public class CircuitState implements InstanceData {
 		wireData = data;
 	}
 
-	Value getComponentOutputAt(Location p) {
+	Value getComponentOutputAt(Point p) {
 		// for CircuitWires - to get values, ignoring wires' contributions
 		Propagator.SetData cause_list = causes.get(p);
 		return Propagator.computeValue(cause_list);
 	}
 
-	Value getValueByWire(Location p) {
+	Value getValueByWire(Point p) {
 		return values.get(p);
 	}
 
-	void setValueByWire(Location p, Value v) {
+	void setValueByWire(Point p, Value v) {
 		// for CircuitWires - to set value at point
 		boolean changed;
 		if (v == Value.NIL) {

@@ -3,6 +3,7 @@
 
 package com.cburch.logisim.std.gates;
 
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -19,7 +20,6 @@ import com.cburch.logisim.comp.ComponentFactory;
 import com.cburch.logisim.data.AttributeSet;
 import com.cburch.logisim.data.Bounds;
 import com.cburch.logisim.data.Direction;
-import com.cburch.logisim.data.Location;
 import com.cburch.logisim.data.Value;
 import com.cburch.logisim.instance.StdAttr;
 import com.cburch.logisim.std.wiring.Constant;
@@ -57,16 +57,16 @@ public class CircuitBuilder {
 		for (int i = 0; i < layouts.length; i++) {
 			String outputName = model.getOutputs().get(i);
 			Layout layout = layouts[i];
-			Location output;
+			Point output;
 			int height;
 			if (layout == null) {
-				output = Location.create(outputX, y + 20);
+				output = new Point(outputX, y + 20);
 				height = 40;
 			} else {
 				int dy = 0;
 				if (layout.outputY < 20) dy = 20 - layout.outputY;
 				height = Math.max(dy + layout.height, 40);
-				output = Location.create(outputX, y + dy + layout.outputY);
+				output = new Point(outputX, y + dy + layout.outputY);
 				placeComponents(result, layouts[i], x, y + dy, inputData, output);
 			}
 			placeOutput(result, output, outputName);
@@ -284,7 +284,7 @@ public class CircuitBuilder {
 			return data.spineX;
 		}
 		
-		void registerConnection(String input, Location loc) {
+		void registerConnection(String input, Point loc) {
 			SingleInput data = inputs.get(input);
 			data.ys.add(loc);
 		}
@@ -292,7 +292,7 @@ public class CircuitBuilder {
 		
 	private static class SingleInput {
 		int spineX;
-		ArrayList<Location> ys = new ArrayList<Location>();
+		ArrayList<Point> ys = new ArrayList<Point>();
 		
 		SingleInput(int spineX) { this.spineX = spineX; }
 	}
@@ -310,16 +310,16 @@ public class CircuitBuilder {
 	 */
 	private static void placeComponents(CircuitMutation result,
 			Layout layout, int x, int y, InputData inputData,
-			Location output) {
+			Point output) {
 		if (layout.inputName != null) {
 			int inputX = inputData.getSpineX(layout.inputName);
-			Location input = Location.create(inputX, output.getY());
+			Point input = new Point(inputX, (int) output.getY());
 			inputData.registerConnection(layout.inputName, input);
 			result.add(Wire.create(input, output));
 			return;
 		}
 
-		Location compOutput = Location.create(x + layout.width, output.getY());
+		Point compOutput = new Point(x + layout.width, (int) output.getY());
 		Component parent = layout.factory.createComponent(compOutput,
 				layout.attrs);
 		result.add(parent);
@@ -332,13 +332,13 @@ public class CircuitBuilder {
 				&& layout.subLayouts[0].inputName == null) {
 			Layout sub = layout.subLayouts[0];
 			
-			Location input0 = parent.getEnd(1).getLocation();
-			Location input1 = parent.getEnd(2).getLocation();
+			Point input0 = parent.getEnd(1).getLocation();
+			Point input1 = parent.getEnd(2).getLocation();
 			
-			int midX = input0.getX() - 20;
-			Location subOutput = Location.create(midX, output.getY());
-			Location midInput0 = Location.create(midX, input0.getY());
-			Location midInput1 = Location.create(midX, input1.getY());
+			int midX = (int) (input0.getX() - 20);
+			Point subOutput = new Point(midX, (int) output.getY());
+			Point midInput0 = new Point(midX, (int) input0.getY());
+			Point midInput1 = new Point(midX, (int) input1.getY());
 			result.add(Wire.create(subOutput, midInput0));
 			result.add(Wire.create(midInput0, input0));
 			result.add(Wire.create(subOutput, midInput1));
@@ -355,7 +355,7 @@ public class CircuitBuilder {
 			if (factory instanceof AbstractGate) {
 				Value val = ((AbstractGate) factory).getIdentity();
 				Integer valInt = Integer.valueOf(val.toIntValue());
-				Location loc = parent.getEnd(index).getLocation();
+				Point loc = parent.getEnd(index).getLocation();
 				AttributeSet attrs = Constant.FACTORY.createAttributeSet();
 				attrs.setValue(Constant.ATTR_VALUE, valInt);
 				result.add(Constant.FACTORY.createComponent(loc, attrs));
@@ -366,18 +366,18 @@ public class CircuitBuilder {
 			Layout sub = layout.subLayouts[i];
 			
 			int inputIndex = i + 1;
-			Location subDest = parent.getEnd(inputIndex).getLocation();
+			Point subDest = parent.getEnd(inputIndex).getLocation();
 			
 			int subOutputY = y + sub.y + sub.outputY;
 			if (sub.inputName != null) {
-				int destY = subDest.getY();
+				int destY = (int) subDest.getY();
 				if (i == 0 && destY < subOutputY
 						|| i == layout.subLayouts.length - 1 && destY > subOutputY) {
 					subOutputY = destY;
 				}
 			}
 			
-			Location subOutput;
+			Point subOutput;
 			int numSubs = layout.subLayouts.length;
 			if (subOutputY == subDest.getY()) {
 				subOutput = subDest;
@@ -396,9 +396,9 @@ public class CircuitBuilder {
 						back = i - (numSubs / 2);
 					}
 				}
-				int subOutputX = subDest.getX() - 20 - 10 * back;
-				subOutput = Location.create(subOutputX, subOutputY);
-				Location mid = Location.create(subOutputX, subDest.getY());
+				int subOutputX = (int) (subDest.getX() - 20 - 10 * back);
+				subOutput = new Point(subOutputX, subOutputY);
+				Point mid = new Point(subOutputX, (int) subDest.getY());
 				result.add(Wire.create(subOutput, mid));
 				result.add(Wire.create(mid, subDest));
 			}
@@ -412,7 +412,7 @@ public class CircuitBuilder {
 	//
 	// placeOutput
 	//
-	private static void placeOutput(CircuitMutation result, Location loc, String name) {
+	private static void placeOutput(CircuitMutation result, Point loc, String name) {
 		ComponentFactory factory = Pin.FACTORY;
 		AttributeSet attrs = factory.createAttributeSet();
 		attrs.setValue(StdAttr.FACING, Direction.WEST);
@@ -426,8 +426,8 @@ public class CircuitBuilder {
 	// placeInputs
 	//
 	private static void placeInputs(CircuitMutation result, InputData inputData) {
-		ArrayList<Location> forbiddenYs = new ArrayList<Location>();
-		Comparator<Location> compareYs = new CompareYs();
+		ArrayList<Point> forbiddenYs = new ArrayList<Point>();
+		Comparator<Point> compareYs = new CompareYs();
 		int curX = 40;
 		int curY = 30;
 		for (int i = 0; i < inputData.names.length; i++) {
@@ -436,7 +436,7 @@ public class CircuitBuilder {
 			
 			// determine point where we can intersect with spine
 			int spineX = singleInput.spineX;
-			Location spineLoc = Location.create(spineX, curY);
+			Point spineLoc = new Point(spineX, curY);
 			if (singleInput.ys.size() > 0) {
 				// search for a Y that won't intersect with others
 				// (we needn't bother if the pin doesn't connect
@@ -444,11 +444,11 @@ public class CircuitBuilder {
 				Collections.sort(forbiddenYs, compareYs);
 				while (Collections.binarySearch(forbiddenYs, spineLoc, compareYs) >= 0) {
 					curY += 10;
-					spineLoc = Location.create(spineX, curY);
+					spineLoc = new Point(spineX, curY);
 				}
 				singleInput.ys.add(spineLoc);
 			}
-			Location loc = Location.create(curX, curY);
+			Point loc = new Point(curX, curY);
 			
 			// now create the pin
 			ComponentFactory factory = Pin.FACTORY;
@@ -460,7 +460,7 @@ public class CircuitBuilder {
 			attrs.setValue(Pin.ATTR_LABEL_LOC, Direction.NORTH);
 			result.add(factory.createComponent(loc, attrs));
 			
-			ArrayList<Location> spine = singleInput.ys;
+			ArrayList<Point> spine = singleInput.ys;
 			if (spine.size() > 0) {
 				// create wire connecting pin to spine
 				/* This should no longer matter - the wires will be repaired
@@ -480,9 +480,9 @@ public class CircuitBuilder {
 
 				// create spine
 				Collections.sort(spine, compareYs);
-				Location prev = spine.get(0);
+				Point prev = spine.get(0);
 				for (int k = 1, n = spine.size(); k < n; k++) {
-					Location cur = spine.get(k);
+					Point cur = spine.get(k);
 					if (!cur.equals(prev)) {
 						result.add(Wire.create(prev, cur));
 						prev = cur;
@@ -496,9 +496,9 @@ public class CircuitBuilder {
 		}
 	}
 	
-	private static class CompareYs implements Comparator<Location> {
-		public int compare(Location a, Location b) {
-			return a.getY() - b.getY();
+	private static class CompareYs implements Comparator<Point> {
+		public int compare(Point a, Point b) {
+			return (int) (a.getY() - b.getY());
 		}
 	}
 }

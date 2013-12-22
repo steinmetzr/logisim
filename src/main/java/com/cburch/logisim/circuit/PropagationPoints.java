@@ -4,21 +4,21 @@
 package com.cburch.logisim.circuit;
 
 import java.awt.Graphics;
+import java.awt.Point;
 import java.util.HashMap;
 import java.util.HashSet;
 
 import com.cburch.logisim.comp.Component;
 import com.cburch.logisim.comp.ComponentDrawContext;
 import com.cburch.logisim.data.Bounds;
-import com.cburch.logisim.data.Location;
 import com.cburch.logisim.util.GraphicsUtil;
 
 class PropagationPoints {
 	private static class Entry {
 		private CircuitState state;
-		private Location loc;
+		private Point loc;
 		
-		private Entry(CircuitState state, Location loc) {
+		private Entry(CircuitState state, Point loc) {
 			this.state = state;
 			this.loc = loc;
 		}
@@ -42,7 +42,7 @@ class PropagationPoints {
 		this.data = new HashSet<Entry>();
 	}
 	
-	void add(CircuitState state, Location loc) {
+	void add(CircuitState state, Point loc) {
 		data.add(new Entry(state, loc));
 	}
 	
@@ -67,8 +67,8 @@ class PropagationPoints {
 		GraphicsUtil.switchToWidth(g, 2);
 		for (Entry e : data) {
 			if (e.state == state) {
-				Location p = e.loc;
-				g.drawOval(p.getX() - 4, p.getY() - 4, 8, 8);
+				Point p = e.loc;
+				g.drawOval((int)p.getX() - 4, (int)p.getY() - 4, 8, 8);
 			} else if (stateMap.containsKey(e.state)) {
 				CircuitState substate = stateMap.get(e.state);
 				Component subcirc = substate.getSubcircuit();

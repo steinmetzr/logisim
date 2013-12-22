@@ -182,14 +182,14 @@ abstract class AbstractGate extends InstanceFactory {
 				if (negatedBit == 1) {
 					Point in = getInputOffset(attrs, i);
 					Point cen = in.translate(facing, 5);
-					painter.drawDongle(loc.getX() + cen.getX(),
-							loc.getY() + cen.getY());
+					painter.drawDongle((int)(loc.getX() + cen.getX()),(int)(
+							loc.getY() + cen.getY()));
 				}
 			}
 		}
 		
 		g.setColor(baseColor);
-		g.translate(loc.getX(), loc.getY());
+		g.translate((int)loc.getX(), (int)loc.getY());
 		double rotate = 0.0;
 		if (facing != Direction.EAST && g instanceof Graphics2D) {
 			rotate = -facing.toRadians();
@@ -575,7 +575,7 @@ abstract class AbstractGate extends InstanceFactory {
 }
 
 public int manhattanDistanceTo(Point o) {
-	return Math.abs(o.x - this.x) + Math.abs(o.y - this.y);
+	return Math.abs(o.x - this.x) + Math.abs(o.y - y);
 }
 
 public int manhattanDistanceTo(int x, int y) {

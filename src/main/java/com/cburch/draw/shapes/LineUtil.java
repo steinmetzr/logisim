@@ -3,7 +3,7 @@
 
 package com.cburch.draw.shapes;
 
-import com.cburch.logisim.data.Location;
+import java.awt.Point;
 
 public class LineUtil {
 	private LineUtil() { }
@@ -69,9 +69,9 @@ public class LineUtil {
 		return new double[] { x0 + u * dx, y0 + u * dy };
 	}
 
-	public static Location snapTo8Cardinals(Location from, int mx, int my) {
-		int px = from.getX();
-		int py = from.getY();
+	public static Point snapTo8Cardinals(Point from, int mx, int my) {
+		int px = (int) from.getX();
+		int py = (int) from.getY();
 		if (mx != px && my != py) {
 			double ang = Math.atan2(my - py, mx - px);
 			int d45 = (Math.abs(mx - px) + Math.abs(my - py)) / 2;
@@ -79,21 +79,21 @@ public class LineUtil {
 			switch (d) {
 			case 0: case 8: // going west
 			case 4: // going east
-				return Location.create(mx, py);
+				return new Point(mx, py);
 			case 2: // going north
 			case 6: // going south
-				return Location.create(px, my);
+				return new Point(px, my);
 			case 1: // going northwest
-				return Location.create(px - d45, py - d45);
+				return new Point(px - d45, py - d45);
 			case 3: // going northeast
-				return Location.create(px + d45, py - d45);
+				return new Point(px + d45, py - d45);
 			case 5: // going southeast
-				return Location.create(px + d45, py + d45);
+				return new Point(px + d45, py + d45);
 			case 7: // going southwest
-				return Location.create(px - d45, py + d45);
+				return new Point(px - d45, py + d45);
 			}
 		}
-		return Location.create(mx, my); // should never happen
+		return new Point(mx, my); // should never happen
 	}
 
 }

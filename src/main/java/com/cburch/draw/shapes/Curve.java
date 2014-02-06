@@ -5,6 +5,7 @@ package com.cburch.draw.shapes;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.geom.QuadCurve2D;
 import java.util.Arrays;
 import java.util.List;
@@ -18,16 +19,16 @@ import com.cburch.draw.model.Handle;
 import com.cburch.draw.model.HandleGesture;
 import com.cburch.logisim.data.Attribute;
 import com.cburch.logisim.data.Bounds;
-import com.cburch.logisim.data.Location;
+
 import static com.cburch.logisim.util.LocaleString.*;
 
 public class Curve extends FillableCanvasObject {
-	private Location p0;
-	private Location p1;
-	private Location p2;
+	private Point p0;
+	private Point p1;
+	private Point p2;
 	private Bounds bounds;
 	
-	public Curve(Location end0, Location end1, Location ctrl) {
+	public Curve(Point end0, Point end1, Point ctrl) {
 		this.p0 = end0;
 		this.p1 = ctrl;
 		this.p2 = end1;
@@ -59,15 +60,15 @@ public class Curve extends FillableCanvasObject {
 		return SvgCreator.createCurve(doc, this);
 	}
 
-	public Location getEnd0() {
+	public Point getEnd0() {
 		return p0;
 	}
 	
-	public Location getEnd1() {
+	public Point getEnd1() {
 		return p2;
 	}
 	
-	public Location getControl() {
+	public Point getControl() {
 		return p1;
 	}
 	
@@ -92,7 +93,7 @@ public class Curve extends FillableCanvasObject {
 	}
 	
 	@Override
-	public boolean contains(Location loc, boolean assumeFilled) {
+	public boolean contains(Point loc, boolean assumeFilled) {
 		Object type = getPaintType();
 		if (assumeFilled && type == DrawAttr.PAINT_STROKE) {
 			type = DrawAttr.PAINT_STROKE_FILL;
@@ -127,9 +128,9 @@ public class Curve extends FillableCanvasObject {
 	
 	@Override
 	public void translate(int dx, int dy) {
-		p0 = p0.translate(dx, dy);
-		p1 = p1.translate(dx, dy);
-		p2 = p2.translate(dx, dy);
+		p0.translate(dx, dy);
+		p1.translate(dx, dy);
+		p2.translate(dx, dy);
 		bounds = bounds.translate(dx, dy);
 	}
 	
@@ -150,14 +151,14 @@ public class Curve extends FillableCanvasObject {
 					new Handle(this, p2) };
 			if (g.isAt(p0)) {
 				if (gesture.isShiftDown()) {
-					Location p = LineUtil.snapTo8Cardinals(p2, gx, gy);
+					Point p = LineUtil.snapTo8Cardinals(p2, gx, gy);
 					ret[0] = new Handle(this, p);
 				} else {
 					ret[0] = new Handle(this, gx, gy);
 				}
 			} else if (g.isAt(p2)) {
 				if (gesture.isShiftDown()) {
-					Location p = LineUtil.snapTo8Cardinals(p0, gx, gy);
+					Point p = LineUtil.snapTo8Cardinals(p0, gx, gy);
 					ret[2] = new Handle(this, p);
 				} else {
 					ret[2] = new Handle(this, gx, gy);
@@ -233,7 +234,7 @@ public class Curve extends FillableCanvasObject {
 				p[1].getX(), p[1].getY(), p[2].getX(), p[2].getY());
 	}
 	
-	private static double[] toArray(Location loc) {
+	private static double[] toArray(Point loc) {
 		return new double[] { loc.getX(), loc.getY() };
 	}
 }

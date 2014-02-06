@@ -6,6 +6,7 @@ package com.cburch.logisim.tools;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Graphics;
+import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -25,7 +26,6 @@ import com.cburch.logisim.comp.ComponentFactory;
 import com.cburch.logisim.data.Attribute;
 import com.cburch.logisim.data.AttributeSet;
 import com.cburch.logisim.data.Direction;
-import com.cburch.logisim.data.Location;
 import com.cburch.logisim.data.Value;
 import com.cburch.logisim.gui.main.Canvas;
 import com.cburch.logisim.gui.main.Selection;
@@ -33,13 +33,13 @@ import com.cburch.logisim.gui.main.SelectionActions;
 import com.cburch.logisim.gui.main.Selection.Event;
 import com.cburch.logisim.proj.Action;
 import com.cburch.logisim.util.GraphicsUtil;
+
 import static com.cburch.logisim.util.LocaleString.*;
 
 
 public class EditTool extends Tool {
 	private static final int CACHE_MAX_SIZE = 32;
-	private static final Location NULL_LOCATION
-		= Location.create(Integer.MIN_VALUE, Integer.MIN_VALUE);
+	private static final Point NULL_LOCATION = new Point(Integer.MIN_VALUE, Integer.MIN_VALUE);
 	
 	private class Listener implements CircuitListener, Selection.Listener {
 		public void circuitChanged(CircuitEvent event) {
@@ -61,14 +61,14 @@ public class EditTool extends Tool {
 	private SelectTool select;
 	private WiringTool wiring;
 	private Tool current;
-	private LinkedHashMap<Location,Boolean> cache;
+	private LinkedHashMap<Point,Boolean> cache;
 	private Canvas lastCanvas;
 	private int lastRawX;
 	private int lastRawY;
 	private int lastX; // last coordinates where wiring was computed
 	private int lastY;
 	private int lastMods; // last modifiers for mouse event
-	private Location wireLoc; // coordinates where to draw wiring indicator, if
+	private Point wireLoc; // coordinates where to draw wiring indicator, if
 	private int pressX; // last coordinate where mouse was pressed
 	private int pressY; // (used to determine when a short wire has been clicked)
 	
@@ -77,7 +77,7 @@ public class EditTool extends Tool {
 		this.select = select;
 		this.wiring = wiring;
 		this.current = select;
-		this.cache = new LinkedHashMap<Location,Boolean>();
+		this.cache = new LinkedHashMap<Point,Boolean>();
 		this.lastX = -1;
 		this.wireLoc = NULL_LOCATION;
 		this.pressX = -1;
@@ -140,10 +140,10 @@ public class EditTool extends Tool {
 		
 	@Override
 	public void draw(Canvas canvas, ComponentDrawContext context) {
-		Location loc = wireLoc;
+		Point loc = wireLoc;
 		if (loc != NULL_LOCATION && current != wiring) {
-			int x = loc.getX();
-			int y = loc.getY();
+			int x = (int) loc.getX();
+			int y = (int) loc.getY();
 			Graphics g = context.getGraphics();
 			g.setColor(Value.TRUE_COLOR);
 			GraphicsUtil.switchToWidth(g, 2);
@@ -176,7 +176,7 @@ public class EditTool extends Tool {
 	@Override
 	public void mousePressed(Canvas canvas, Graphics g, MouseEvent e) {
 		boolean wire = updateLocation(canvas, e);
-		Location oldWireLoc = wireLoc;
+		Point oldWireLoc = wireLoc;
 		wireLoc = NULL_LOCATION;
 		lastX = Integer.MIN_VALUE;
 		if (wire) {
@@ -287,7 +287,7 @@ public class EditTool extends Tool {
 		if (lastX == snapx && lastY == snapy && modsSame) { // already computed
 			return wireLoc != NULL_LOCATION;
 		} else {
-			Location snap = Location.create(snapx, snapy);
+			Point snap = new Point(snapx, snapy);
 			if (modsSame) {
 				Object o = cache.get(snap);
 				if (o != null) {
@@ -306,7 +306,7 @@ public class EditTool extends Tool {
 			wireLoc = ret ? snap : NULL_LOCATION;
 			cache.put(snap, Boolean.valueOf(ret));
 			int toRemove = cache.size() - CACHE_MAX_SIZE;
-			Iterator<Location> it = cache.keySet().iterator();
+			Iterator<Point> it = cache.keySet().iterator();
 			while (it.hasNext() && toRemove > 0) {
 				it.next();
 				it.remove();
@@ -320,7 +320,7 @@ public class EditTool extends Tool {
 		}
 	}
 	
-	private boolean isWiringPoint(Canvas canvas, Location loc, int modsEx) {
+	private boolean isWiringPoint(Canvas canvas, Point loc, int modsEx) {
 		boolean wiring = (modsEx & MouseEvent.ALT_DOWN_MASK) == 0;
 		boolean select = !wiring;
 		

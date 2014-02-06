@@ -5,6 +5,7 @@ package com.cburch.draw.shapes;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Point;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -19,7 +20,7 @@ import com.cburch.draw.model.Handle;
 import com.cburch.draw.model.HandleGesture;
 import com.cburch.logisim.data.Attribute;
 import com.cburch.logisim.data.Bounds;
-import com.cburch.logisim.data.Location;
+
 import static com.cburch.logisim.util.LocaleString.*;
 
 public class Line extends AbstractCanvasObject {
@@ -72,12 +73,12 @@ public class Line extends AbstractCanvasObject {
 		return SvgCreator.createLine(doc, this);
 	}
 
-	public Location getEnd0() {
-		return Location.create(x0, y0);
+	public Point getEnd0() {
+		return new Point(x0, y0);
 	}
 	
-	public Location getEnd1() {
-		return Location.create(x1, y1);
+	public Point getEnd1() {
+		return new Point(x1, y1);
 	}
 	
 	@Override
@@ -117,7 +118,7 @@ public class Line extends AbstractCanvasObject {
 	}
 	
 	@Override
-	public Location getRandomPoint(Bounds bds, Random rand) {
+	public Point getRandomPoint(Bounds bds, Random rand) {
 		double u = rand.nextDouble();
 		int x = (int) Math.round(x0 + u * (x1 - x0));
 		int y = (int) Math.round(y0 + u * (y1 - y0));
@@ -126,13 +127,13 @@ public class Line extends AbstractCanvasObject {
 			x += (rand.nextInt(w) - w / 2);
 			y += (rand.nextInt(w) - w / 2);
 		}
-		return Location.create(x, y);
+		return new Point(x, y);
 	}
 
 	@Override
-	public boolean contains(Location loc, boolean assumeFilled) {
-		int xq = loc.getX();
-		int yq = loc.getY();
+	public boolean contains(Point loc, boolean assumeFilled) {
+		int xq = (int) loc.getX();
+		int yq = (int) loc.getY();
 		double d = LineUtil.ptDistSqSegment(x0, y0, x1, y1, xq, yq);
 		int thresh = Math.max(ON_LINE_THRESH, strokeWidth / 2);
 		return d < thresh * thresh;
@@ -161,9 +162,9 @@ public class Line extends AbstractCanvasObject {
 			int dy = gesture.getDeltaY();
 			Handle[] ret = new Handle[2];
 			ret[0] = new Handle(this, h.isAt(x0, y0)
-					? Location.create(x0 + dx, y0 + dy) : Location.create(x0, y0));
+					? new Point(x0 + dx, y0 + dy) : new Point(x0, y0));
 			ret[1] = new Handle(this, h.isAt(x1, y1)
-					? Location.create(x1 + dx, y1 + dy) : Location.create(x1, y1));
+					? new Point(x1 + dx, y1 + dy) : new Point(x1, y1));
 			return UnmodifiableList.decorate(Arrays.asList(ret));
 		}
 	}
